@@ -59,7 +59,7 @@ double Graph::Weight(int iBegin, int iEnd)
 
     if (m_dictActualEdges.count(edgeKey) == 0)
     {
-        throw new exception("No actual edge.");
+        return 0.0;
     }
 
     return m_dictActualEdges[edgeKey]->dWeight;

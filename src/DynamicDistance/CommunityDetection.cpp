@@ -109,6 +109,17 @@ void CommunityDetection::DynamicInteraction()
                 {
                     double newDistance = m_cGraph.ActualDistance(iter->first.iBegin, iter->first.iEnd, m_iCurrentStep) + delta;
 
+                    
+                    if (newDistance > 1 - PRECISE)
+                    {
+                        newDistance = 1;
+                    }
+                    else if (newDistance < PRECISE)
+                    {
+                        newDistance = 0;
+                    }
+                    
+
                     m_cGraph.UpdateActualEdge(iter->first.iBegin, iter->first.iEnd, newDistance, iNextStep);
 
                     bContinue = true;
@@ -186,6 +197,7 @@ double CommunityDetection::ComputeWeightedJaccardDistance(int iBegin, int iEnd, 
         while (iterEnd != allNeighbours.end())
         {
             allNeighboursWeight += m_cGraph.Weight(*iterBegin, *iterEnd);
+            iterEnd++;
         }
     }
 
