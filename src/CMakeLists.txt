@@ -10,6 +10,7 @@ set(SOURCE_FILES
     DynamicDistance/Graph.h
     DynamicDistance/Helper.cpp
     DynamicDistance/Helper.h
-    DynamicDistance/Main.cpp)
+    DynamicDistance/Main.cpp DynamicDistance/MetisInputPreProcess.cpp)
 
 add_executable(src ${SOURCE_FILES})
+add_executable(InputMetis DynamicDistance/MetisInputPreProcess.cpp)
