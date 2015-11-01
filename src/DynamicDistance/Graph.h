@@ -12,6 +12,7 @@
 #include <iostream>
 #include <ctime>
 #include <queue>
+#include <math.h>
 #include "Helper.h"
 
 using namespace std;
