@@ -1,6 +1,7 @@
 src/.idea
 src/.idea/*
 src/Experiment/*
+src/CMakeLists.txt
 java_io/.settings/
 *.project
 *.classpath
