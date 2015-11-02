@@ -65,18 +65,19 @@ private:
     void RefineEdgeKey(int& iBegin, int& iEnd);
     void ClearVertices();
     void ClearEdges(map<EdgeKey, EdgeValue*>& dictEdges);
-
+    double Distance(int iBegin, int iEnd, int iStep, map<EdgeKey, EdgeValue*>& dictEdges);
 public:
     bool AddActualEdge(int iBegin, int iEnd, double dWeight, EdgeValue* &pNewEdgeValue);
     bool AddVirtualEdge(int iBegin, int iEnd, double dWeight, EdgeValue* &pNewEdgeValue);
     void UpdateActualEdge(int iBegin, int iEnd, double dNewDistance, int iStep);
-    void UpdateVirtualEdge(int iBegin, int iEnd, double dNewDistance, int iStep = 0);
+    void UpdateVirtualEdge(int iBegin, int iEnd, double dNewDistance, int iStep);
     double ActualDistance(int iBegin, int iEnd, int iStep);
-    double VirtualDistance(int iBegin, int iEnd);
+    double VirtualDistance(int iBegin, int iEnd, int iStep);
     double Weight(int iBegin, int iEnd);
     map<int, set<int>* >* FindAllConnectedComponents();
     map<EdgeKey, EdgeValue*>* GetEdges();
     set<int>* GetVertexNeighbours(int iVertexId);
+    set<int>* GetCommonNeighboursOfVirtualEdge(int iBegin, int iEnd);
 
     ~Graph();
 };

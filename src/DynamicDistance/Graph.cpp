@@ -22,30 +22,12 @@ void Graph::UpdateVirtualEdge(int iBegin, int iEnd, double dNewDistance, int iSt
 
 double Graph::ActualDistance(int iBegin, int iEnd, int iStep)
 {
-    RefineEdgeKey(iBegin, iEnd);
-
-    EdgeKey edgeKey{ iBegin, iEnd };
-
-    if (m_dictActualEdges.count(edgeKey) == 0)
-    {
-        throw new exception("No actual edge.");
-    }
-
-    return m_dictActualEdges[edgeKey]->aDistance[iStep];
+    return Distance(iBegin, iEnd, iStep, m_dictActualEdges);
 }
 
-double Graph::VirtualDistance(int iBegin, int iEnd)
+double Graph::VirtualDistance(int iBegin, int iEnd, int iStep)
 {
-    RefineEdgeKey(iBegin, iEnd);
-
-    EdgeKey edgeKey{ iBegin, iEnd };
-
-    if (m_dictVirtualEdges.count(edgeKey) == 0)
-    {
-        throw new exception("No virtual edge.");
-    }
-
-    return m_dictVirtualEdges[edgeKey]->aDistance[0];
+    return Distance(iBegin, iEnd, iStep, m_dictVirtualEdges);
 }
 
 double Graph::Weight(int iBegin, int iEnd)
@@ -126,6 +108,20 @@ set<int>* Graph::GetVertexNeighbours(int iVertexId)
 
     VertexValue* vertexValue = m_dictVertices[iVertexId];
     return m_dictVertices[iVertexId]->pNeighbours;
+}
+
+set<int>* Graph::GetCommonNeighboursOfVirtualEdge(int iBegin, int iEnd)
+{
+    RefineEdgeKey(iBegin, iEnd);
+
+    EdgeKey edgeKey{ iBegin, iEnd };
+
+    if (m_dictVirtualEdges.count(edgeKey) == 0)
+    {
+        throw new exception("No such virtual edges.");
+    }
+
+    return m_dictActualEdges[edgeKey]->pCommonNeighbours;
 }
 
 Graph::~Graph()
@@ -241,4 +237,21 @@ void Graph::ClearEdges(map<EdgeKey, EdgeValue*>& dictEdges)
             iter->second = NULL;
         }
     }
+}
+
+double Graph::Distance(int iBegin, int iEnd, int iStep, map<EdgeKey, EdgeValue*>& dictEdges)
+{
+    if (iBegin == iEnd)
+        return 0;
+
+    RefineEdgeKey(iBegin, iEnd);
+
+    EdgeKey edgeKey{ iBegin, iEnd };
+
+    if (dictEdges.count(edgeKey) == 0)
+    {
+        throw new exception("No edge.");
+    }
+
+    return dictEdges[edgeKey]->aDistance[iStep];
 }

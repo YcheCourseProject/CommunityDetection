@@ -109,7 +109,6 @@ void CommunityDetection::DynamicInteraction()
                 {
                     double newDistance = m_cGraph.ActualDistance(iter->first.iBegin, iter->first.iEnd, m_iCurrentStep) + delta;
 
-                    
                     if (newDistance > 1 - PRECISE)
                     {
                         newDistance = 1;
@@ -142,11 +141,6 @@ void CommunityDetection::DynamicInteraction()
     }
 
     cout << "Dynamic Iteraction Complete: " << float(clock() - begin_time) / CLOCKS_PER_SEC  << endl;
-}
-
-void CommunityDetection::OutputCommunities()
-{
-    
 }
 
 void CommunityDetection::SetUnion(set<int>* left, set<int>* right, set<int>* dest)
@@ -272,7 +266,7 @@ double CommunityDetection::ComputePartialEI(int iTarget, int iTargetNeighbour, s
 
 double CommunityDetection::ComputeInfluence(int iTargetNeighbour, int iENVertex)
 {
-    double dDistance = 1 - m_cGraph.VirtualDistance(iTargetNeighbour, iENVertex);
+    double dDistance = 1 - RecomputeVirtualDistance(iTargetNeighbour, iENVertex);
 
     if (dDistance >= m_dThreshold)
         return dDistance;
@@ -301,6 +295,38 @@ void CommunityDetection::ComputeVirtualDistance(int iBegin, int iEnd)
         double dDistance = ComputeJaccardDistance(iBegin, iEnd, pEdgeValue);
         m_cGraph.UpdateVirtualEdge(iBegin, iEnd, dDistance, m_iCurrentStep);
     }
+}
+
+double CommunityDetection::RecomputeVirtualDistance(int iBegin, int iEnd)
+{
+    double dNumerator = 0;
+    set<int>* pBeginNeighbours = m_cGraph.GetVertexNeighbours(iBegin);
+    set<int>* pEndNeighbours = m_cGraph.GetVertexNeighbours(iEnd);
+
+    set<int> setCommonNeighbours;
+
+    SetIntersection(pBeginNeighbours, pEndNeighbours, &setCommonNeighbours);
+
+    for (set<int>::iterator iter = setCommonNeighbours.begin(); iter != setCommonNeighbours.end(); iter++)
+    {
+        dNumerator += (1 - m_cGraph.ActualDistance(iBegin, *iter, m_iCurrentStep)) + (1 - m_cGraph.ActualDistance(iEnd, *iter, m_iCurrentStep));
+    }
+
+    double dDenominator = 0;
+
+    for (set<int>::iterator iter = pBeginNeighbours->begin(); iter != pBeginNeighbours->end(); iter++)
+    {
+        if (*iter != iBegin)
+            dDenominator += (1 - m_cGraph.ActualDistance(iBegin, *iter, m_iCurrentStep));
+    }
+
+    for (set<int>::iterator iter = pEndNeighbours->begin(); iter != pEndNeighbours->end(); iter++)
+    {
+        if (*iter != iEnd)
+            dDenominator += (1 - m_cGraph.ActualDistance(iEnd, *iter, m_iCurrentStep));
+    }
+
+    return 1 - dNumerator / dDenominator;
 }
 
 void CommunityDetection::UpdateENDistance(int iTarget, set<int>& setEN)

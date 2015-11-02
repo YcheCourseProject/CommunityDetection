@@ -16,7 +16,6 @@ private:
     void SetupGraph(const string& strFileName);
     void InitializeGraph();
     void DynamicInteraction();
-    void OutputCommunities();
 
 private:
     void SetUnion(set<int>* left, set<int>* right, set<int>* dest);
@@ -36,6 +35,7 @@ private:
     void ComputeExclusiveNeighbour(int iBegin, int iEnd, EdgeValue* pEdgeValue);
     void ComputeCommonNeighbour(int iBegin, int iEnd, EdgeValue* pEdgeValue);
     void ComputeVirtualDistance(int iBegin, int iEnd);
+    double RecomputeVirtualDistance(int iBegin, int iEnd);
     void UpdateENDistance(int iTarget, set<int>& setEN);
 
 public:

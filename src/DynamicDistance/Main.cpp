@@ -35,20 +35,19 @@ double TestModularity(map<int, set<int>*>* dictTargetCommunities, map<int, set<i
 
 int main()
 {
-    /*
-    string strInputFileName = "C:\\Users\\ssunah\\gitchina\\Community-Detection\\dataset\\small\\polbooks\\polbooks_edges_input.csv";
-    string strOutputEdgeFileName = "football_edges_output.csv";
+    string strInputFileName = "C:\\Users\\ssunah\\gitchina\\Community-Detection\\dataset\\small\\test\\test_edges_input.csv";
+    string strOutputEdgeFileName = "output.csv";
     string strOutputCommunitiesFileName = "football_communities_output.csv";
     bool bIsWeighted = false;
-    double dThreshold = 0.4;
+    double dThreshold = 0.5;
 
     CommunityDetection communityDetection(bIsWeighted, dThreshold);
 
     communityDetection.Execute(strInputFileName);
     communityDetection.OutputEdges(strOutputEdgeFileName);
     communityDetection.OutputCommunities(strOutputCommunitiesFileName);
-    */
 
+/*
     string strInputFileNameResult = "C:\\Users\\ssunah\\testdata\\ncut_result.csv";
     string strInputFileNameEdges = "C:\\Users\\ssunah\\testdata\\ncut_edges.csv";
 
@@ -61,5 +60,6 @@ int main()
         delete iter->second;
     }
     delete pResultCommunities;
+    */
     return 0;
 }
