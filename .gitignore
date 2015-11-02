@@ -1,5 +1,5 @@
-src/.idea/	
-
+*/.idea
+src/.idea/*
 java_io/.settings/
 *.project
 *.classpath
