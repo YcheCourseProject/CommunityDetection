@@ -1,5 +1,6 @@
 src/.idea
 src/.idea/*
+src/Experiment/*
 java_io/.settings/
 *.project
 *.classpath
