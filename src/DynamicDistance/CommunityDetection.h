@@ -12,6 +12,8 @@ private:
     int m_iCurrentStep;
     double m_dThreshold;
 
+    map<EdgeKey, double> m_dictVirtualEdgeTempResult;
+
 private:
     void SetupGraph(const string& strFileName);
     void InitializeGraph();
@@ -34,9 +36,7 @@ private:
 
     void ComputeExclusiveNeighbour(int iBegin, int iEnd, EdgeValue* pEdgeValue);
     void ComputeCommonNeighbour(int iBegin, int iEnd, EdgeValue* pEdgeValue);
-    void ComputeVirtualDistance(int iBegin, int iEnd);
-    double RecomputeVirtualDistance(int iBegin, int iEnd);
-    void UpdateENDistance(int iTarget, set<int>& setEN);
+    double ComputeVirtualDistance(int iBegin, int iEnd);
 
 public:
     CommunityDetection(bool bIsWeighted, double dThreshold);

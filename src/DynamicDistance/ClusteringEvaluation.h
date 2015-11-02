@@ -14,6 +14,7 @@ class ClusteringEvaluation
 public:
     static map<int, set<int>* >* GenerateCommunities(const string& strFileName);
     static map<int, set<int>* >* GenerateAdjecentList(const string& strFileName);
+    static void ClearResources(map<int, set<int>* >* pTarget);
 
     static double SimplyPurity(map<int, set<int>* >* dictTargetCommunities, map<int, set<int>* >* dictGroundTruth);
     static double InversePurity(map<int, set<int>* >* dictTargetCommunities, map<int, set<int>* >* dictGroundTruth);
@@ -23,7 +24,7 @@ public:
     static double ARI(map<int, set<int>* >* dictTargetCommunities, map<int, set<int>* >* dictGroundTruth);
     static double RI(map<int, set<int>* >* dictTargetCommunities, map<int, set<int>* >* dictGroundTruth);
     static double Modularity(map<int, set<int>* >* dictTargetCommunities, map<int, set<int>* >* dictAdjacentList);
-    static double Ncuts(map<int, set<int>* >* dictTargetCommunities, map<int, set<int>* >* dictAdjacentList);
+    static double Ncut(map<int, set<int>* >* dictTargetCommunities, map<int, set<int>* >* dictAdjacentList);
 
     static double F_Measure(double dFirstValue, double dSecondValue);
 private:

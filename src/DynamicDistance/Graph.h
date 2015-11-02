@@ -13,6 +13,7 @@
 #include <ctime>
 #include <queue>
 #include <math.h>
+#include <string>
 #include "Helper.h"
 using namespace std;
 
@@ -54,32 +55,27 @@ struct VertexValue
 class Graph
 {
 private:
-    map<EdgeKey, EdgeValue*> m_dictActualEdges;
-    map<EdgeKey, EdgeValue*> m_dictVirtualEdges;
+    map<EdgeKey, EdgeValue*> m_dictEdges;
     map<int, VertexValue*> m_dictVertices;
 
 private:
     void AddVertex(int iBegin, int iEnd);
-    bool AddEdge(int iBegin, int iEnd, double dWeight, map<EdgeKey, EdgeValue*>& dictEdges, EdgeValue* &pNewEdgeValue, bool bIsActual = true);
-    void UpdateEdge(int iBegin, int iEnd, double dDistance, int iStep, map<EdgeKey, EdgeValue*>& dictEdges);
-    void RefineEdgeKey(int& iBegin, int& iEnd);
     void ClearVertices();
-    void ClearEdges(map<EdgeKey, EdgeValue*>& dictEdges);
-    double Distance(int iBegin, int iEnd, int iStep, map<EdgeKey, EdgeValue*>& dictEdges);
+    void ClearEdges();
+
 public:
-    bool AddActualEdge(int iBegin, int iEnd, double dWeight, EdgeValue* &pNewEdgeValue);
-    bool AddVirtualEdge(int iBegin, int iEnd, double dWeight, EdgeValue* &pNewEdgeValue);
-    void UpdateActualEdge(int iBegin, int iEnd, double dNewDistance, int iStep);
-    void UpdateVirtualEdge(int iBegin, int iEnd, double dNewDistance, int iStep);
-    double ActualDistance(int iBegin, int iEnd, int iStep);
-    double VirtualDistance(int iBegin, int iEnd, int iStep);
+    bool AddEdge(int iBegin, int iEnd, double dWeight, EdgeValue* &pNewEdgeValue);
+    void UpdateEdge(int iBegin, int iEnd, double dNewDistance, int iStep);
+    double Distance(int iBegin, int iEnd, int iStep);
     double Weight(int iBegin, int iEnd);
+
     map<int, set<int>* >* FindAllConnectedComponents();
-    map<EdgeKey, EdgeValue*>* GetEdges();
+    map<EdgeKey, EdgeValue*>* GetAllEdges();
     set<int>* GetVertexNeighbours(int iVertexId);
-    set<int>* GetCommonNeighboursOfVirtualEdge(int iBegin, int iEnd);
 
     ~Graph();
+
+    static void RefineEdgeKey(int& iBegin, int& iEnd);
 };
 
 #endif
