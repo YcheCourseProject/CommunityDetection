@@ -1,51 +1,62 @@
 #include "Graph.h"
 
-bool Graph::AddActualEdge(int iBegin, int iEnd, double dWeight, EdgeValue* &pNewEdgeValue)
-{
-    return AddEdge(iBegin, iEnd, dWeight, m_dictActualEdges, pNewEdgeValue);
-}
-
-bool Graph::AddVirtualEdge(int iBegin, int iEnd, double dWeight, EdgeValue* &pNewEdgeValue)
-{
-    return AddEdge(iBegin, iEnd, dWeight, m_dictVirtualEdges, pNewEdgeValue, false);
-}
-
-void Graph::UpdateActualEdge(int iBegin, int iEnd, double dNewDistance, int iStep)
-{
-    UpdateEdge(iBegin, iEnd, dNewDistance, iStep, m_dictActualEdges);
-}
-
-void Graph::UpdateVirtualEdge(int iBegin, int iEnd, double dNewDistance, int iStep)
-{
-    UpdateEdge(iBegin, iEnd, dNewDistance, iStep, m_dictVirtualEdges);
-}
-
-double Graph::ActualDistance(int iBegin, int iEnd, int iStep)
+bool Graph::AddEdge(int iBegin, int iEnd, double dWeight, EdgeValue* &pNewEdgeValue)
 {
     RefineEdgeKey(iBegin, iEnd);
 
     EdgeKey edgeKey{ iBegin, iEnd };
 
-    if (m_dictActualEdges.count(edgeKey) == 0)
+    if (m_dictEdges.count(edgeKey) != 0)
     {
-        throw new exception("No actual edge.");
+        return false;
     }
 
-    return m_dictActualEdges[edgeKey]->aDistance[iStep];
+    EdgeValue* pEdgeValue = pNewEdgeValue = m_dictEdges[edgeKey] = new EdgeValue();
+
+    for (int i = 0; i < STEP_LENGTH; ++i)
+    {
+        pEdgeValue->aDistance[i] = 0;
+    }
+
+    pEdgeValue->dWeight = dWeight;
+    pEdgeValue->pCommonNeighbours = new set<int>();
+    pEdgeValue->pExclusiveNeighbours[BEGIN_POINT] = new set<int>();
+    pEdgeValue->pExclusiveNeighbours[END_POINT] = new set<int>();
+    AddVertex(iBegin, iEnd);
+    AddVertex(iEnd, iBegin);
+
+    return true;
 }
 
-double Graph::VirtualDistance(int iBegin, int iEnd)
+void Graph::UpdateEdge(int iBegin, int iEnd, double dNewDistance, int iStep)
 {
     RefineEdgeKey(iBegin, iEnd);
 
     EdgeKey edgeKey{ iBegin, iEnd };
 
-    if (m_dictVirtualEdges.count(edgeKey) == 0)
+    if (m_dictEdges.count(edgeKey) == 0)
     {
-        throw new exception("No virtual edge.");
+        throw new exception("No Such Edges");
     }
 
-    return m_dictVirtualEdges[edgeKey]->aDistance[0];
+    m_dictEdges[edgeKey]->aDistance[iStep] = dNewDistance;
+}
+
+double Graph::Distance(int iBegin, int iEnd, int iStep)
+{
+    if (iBegin == iEnd)
+        return 0;
+
+    RefineEdgeKey(iBegin, iEnd);
+
+    EdgeKey edgeKey{ iBegin, iEnd };
+
+    if (m_dictEdges.count(edgeKey) == 0)
+    {
+        throw new exception("No edge.");
+    }
+
+    return m_dictEdges[edgeKey]->aDistance[iStep];
 }
 
 double Graph::Weight(int iBegin, int iEnd)
@@ -57,12 +68,12 @@ double Graph::Weight(int iBegin, int iEnd)
 
     EdgeKey edgeKey{ iBegin, iEnd };
 
-    if (m_dictActualEdges.count(edgeKey) == 0)
+    if (m_dictEdges.count(edgeKey) == 0)
     {
         return 0.0;
     }
 
-    return m_dictActualEdges[edgeKey]->dWeight;
+    return m_dictEdges[edgeKey]->dWeight;
 }
 
 map<int, set<int>* >* Graph::FindAllConnectedComponents()
@@ -98,8 +109,8 @@ map<int, set<int>* >* Graph::FindAllConnectedComponents()
                 {
                     EdgeKey edgeKey{iActiveVertice, *iterNeighbour};
                     if (setVisitedVertices.count(*iterNeighbour) == 0
-                        && (ActualDistance(iActiveVertice, *iterNeighbour, 0) < 1
-                            && ActualDistance(iActiveVertice, *iterNeighbour, 1) < 1))
+                        && (Distance(iActiveVertice, *iterNeighbour, 0) < 1
+                            && Distance(iActiveVertice, *iterNeighbour, 1) < 1))
                     {
                         que.push(*iterNeighbour);
                         setVisitedVertices.insert(*iterNeighbour);
@@ -112,9 +123,9 @@ map<int, set<int>* >* Graph::FindAllConnectedComponents()
     return pResult;
 }
 
-map<EdgeKey, EdgeValue*>* Graph::GetEdges()
+map<EdgeKey, EdgeValue*>* Graph::GetAllEdges()
 {
-    return &m_dictActualEdges;
+    return &m_dictEdges;
 }
 
 set<int>* Graph::GetVertexNeighbours(int iVertexId)
@@ -131,8 +142,7 @@ set<int>* Graph::GetVertexNeighbours(int iVertexId)
 Graph::~Graph()
 {
     ClearVertices();
-    ClearEdges(m_dictActualEdges);
-    ClearEdges(m_dictVirtualEdges);
+    ClearEdges();
 }
 
 void Graph::AddVertex(int iBegin, int iEnd)
@@ -145,52 +155,6 @@ void Graph::AddVertex(int iBegin, int iEnd)
     }
 
     m_dictVertices[iBegin]->pNeighbours->insert(iEnd);
-}
-
-bool Graph::AddEdge(int iBegin, int iEnd, double dWeight, map<EdgeKey, EdgeValue*>& dictEdges, EdgeValue* &pNewEdgeValue, bool bIsActual)
-{
-    RefineEdgeKey(iBegin, iEnd);
-
-    EdgeKey edgeKey{ iBegin, iEnd };
-
-    if (dictEdges.count(edgeKey) != 0)
-    {
-        return false;
-    }
-
-    EdgeValue* pEdgeValue = pNewEdgeValue = dictEdges[edgeKey] = new EdgeValue();
-
-    for (int i = 0; i < STEP_LENGTH; ++i)
-    {
-        pEdgeValue->aDistance[i] = 0;
-    }
-
-    pEdgeValue->dWeight = dWeight;
-    pEdgeValue->pCommonNeighbours = new set<int>();
-    pEdgeValue->pExclusiveNeighbours[BEGIN_POINT] = new set<int>();
-    pEdgeValue->pExclusiveNeighbours[END_POINT] = new set<int>();
-
-    if (bIsActual)
-    {
-        AddVertex(iBegin, iEnd);
-        AddVertex(iEnd, iBegin);
-    }
-
-    return true;
-}
-
-void Graph::UpdateEdge(int iBegin, int iEnd, double dDistance, int iStep, map<EdgeKey, EdgeValue*>& dictEdges)
-{
-    RefineEdgeKey(iBegin, iEnd);
-
-    EdgeKey edgeKey{iBegin, iEnd};
-
-    if (dictEdges.count(edgeKey) == 0)
-    {
-        throw new exception("No Such Edges");
-    }
-
-    dictEdges[edgeKey]->aDistance[iStep] = dDistance;
 }
 
 void Graph::RefineEdgeKey(int & iBegin, int & iEnd)
@@ -219,9 +183,9 @@ void Graph::ClearVertices()
     }
 }
 
-void Graph::ClearEdges(map<EdgeKey, EdgeValue*>& dictEdges)
+void Graph::ClearEdges()
 {
-    for (map<EdgeKey, EdgeValue*>::iterator iter = dictEdges.begin(); iter != dictEdges.end(); iter++)
+    for (map<EdgeKey, EdgeValue*>::iterator iter = m_dictEdges.begin(); iter != m_dictEdges.end(); iter++)
     {
         if (iter->second != NULL)
         {

@@ -1,6 +1,8 @@
 #include "CommunityDetection.h"
 
-void CommunityDetection::SetupGraph(const string &strFileName) {
+
+void CommunityDetection::SetupGraph(const string & strFileName)
+{
     ifstream in(strFileName.c_str(), ios::in);
     int iBegin;
     int iEnd;
@@ -23,9 +25,11 @@ void CommunityDetection::SetupGraph(const string &strFileName) {
             in >> dWeight;
         }
         EdgeValue *pNewEdgeValue = NULL;
-        m_cGraph.AddActualEdge(iBegin, iEnd, dWeight, pNewEdgeValue);
+        m_cGraph.AddEdge(iBegin, iEnd, dWeight, pNewEdgeValue);
 
-        if (++i % 3000 == 0) {
+
+        if (++i % 100000 == 0)
+        {
             cout << "Line Number: " << i << endl;
         }
     }
@@ -36,8 +40,10 @@ void CommunityDetection::SetupGraph(const string &strFileName) {
     in.clear();
 }
 
-void CommunityDetection::InitializeGraph() {
-    map<EdgeKey, EdgeValue *> *pEdges = m_cGraph.GetEdges();
+
+void CommunityDetection::InitializeGraph()
+{
+    map<EdgeKey, EdgeValue*>* pEdges = m_cGraph.GetAllEdges();
     double dDistance = 0;
 
     cout << "Initialize Graph Start" << endl;
@@ -53,12 +59,11 @@ void CommunityDetection::InitializeGraph() {
 
         dDistance = ComputeJaccardDistance(iter->first.iBegin, iter->first.iEnd, pEdgeValue);
 
-        m_cGraph.UpdateActualEdge(iter->first.iBegin, iter->first.iEnd, dDistance, m_iCurrentStep);
+        m_cGraph.UpdateEdge(iter->first.iBegin, iter->first.iEnd, dDistance, m_iCurrentStep);
 
-        UpdateENDistance(iter->first.iBegin, *(pEdgeValue->pExclusiveNeighbours[END_POINT]));
-        UpdateENDistance(iter->first.iEnd, *(pEdgeValue->pExclusiveNeighbours[BEGIN_POINT]));
 
-        if (++i % 3000 == 0) {
+        if (++i % 100000 == 0)
+        {
             cout << "Line Number: " << i << endl;
         }
     }
@@ -71,7 +76,8 @@ void CommunityDetection::InitializeGraph() {
 void CommunityDetection::DynamicInteraction() {
     bool bContinue = true;
 
-    map<EdgeKey, EdgeValue *> *pEdges = m_cGraph.GetEdges();
+
+    map<EdgeKey, EdgeValue*>* pEdges = m_cGraph.GetAllEdges();
 
     cout << "Dynamic Iteraction Start" << endl;
     const clock_t begin_time = clock();
@@ -83,8 +89,11 @@ void CommunityDetection::DynamicInteraction() {
 
         int iConvergeNumber = 0;
 
-        for (map<EdgeKey, EdgeValue *>::iterator iter = pEdges->begin(); iter != pEdges->end(); iter++) {
-            EdgeValue *pEdgeValue = iter->second;
+
+        int j = 0;
+        for (map<EdgeKey, EdgeValue*>::iterator iter = pEdges->begin(); iter != pEdges->end(); iter++)
+        {
+            EdgeValue* pEdgeValue = iter->second;
 
             if (pEdgeValue->aDistance[m_iCurrentStep] > 0 && pEdgeValue->aDistance[m_iCurrentStep] < 1) {
                 double dDI = ComputeDI(iter->first.iBegin, iter->first.iEnd, pEdgeValue);
@@ -93,11 +102,11 @@ void CommunityDetection::DynamicInteraction() {
 
                 double delta = dDI + dCI + dEI;
 
-                if (delta > PRECISE || delta < -PRECISE) {
-                    double newDistance =
-                            m_cGraph.ActualDistance(iter->first.iBegin, iter->first.iEnd, m_iCurrentStep) + delta;
 
-                    
+                if (delta > PRECISE || delta < -PRECISE)
+                {
+                    double newDistance = m_cGraph.Distance(iter->first.iBegin, iter->first.iEnd, m_iCurrentStep) + delta;
+
                     if (newDistance > 1 - PRECISE)
                     {
                         newDistance = 1;
@@ -106,9 +115,8 @@ void CommunityDetection::DynamicInteraction() {
                     {
                         newDistance = 0;
                     }
-                    
 
-                    m_cGraph.UpdateActualEdge(iter->first.iBegin, iter->first.iEnd, newDistance, iNextStep);
+                    m_cGraph.UpdateEdge(iter->first.iBegin, iter->first.iEnd, newDistance, iNextStep);
 
                     bContinue = true;
                 }
@@ -117,21 +125,24 @@ void CommunityDetection::DynamicInteraction() {
                 pEdgeValue->aDistance[iNextStep] = pEdgeValue->aDistance[m_iCurrentStep];
                 iConvergeNumber++;
             }
+
+            if (++j % 100000 == 0)
+            {
+                cout << "LineNumber: " << j << endl;
+            }
         }
 
-        if (i % 2 == 0)
+        m_dictVirtualEdgeTempResult.clear();
+        
+        if (++i % 2 == 0)
             cout << "Iteration: " << i << ", The Number of Converge Edges: " << iConvergeNumber
-            << ", The Number of Left Edges: " << m_cGraph.GetEdges()->size() - iConvergeNumber << endl;
 
-        ++i;
+            << ", The Number of Left Edges: " << m_cGraph.GetAllEdges()->size() - iConvergeNumber << endl;
 
         Helper::UpdateStep(m_iCurrentStep);
     }
 
     cout << "Dynamic Iteraction Complete: " << float(clock() - begin_time) / CLOCKS_PER_SEC << endl;
-}
-
-void CommunityDetection::OutputCommunities() {
 
 }
 
@@ -153,34 +164,32 @@ void CommunityDetection::SetIntersection(set<int> *left, set<int> *right, set<in
                      inserter(*dest, dest->end()));
 }
 
-double CommunityDetection::ComputeWeightedJaccardDistance(int iBegin, int iEnd, EdgeValue *pEdgeValue) {
-    set<int> allNeighbours;
 
-    SetUnion(m_cGraph.GetVertexNeighbours(iBegin), m_cGraph.GetVertexNeighbours(iEnd), &allNeighbours);
-
+double CommunityDetection::ComputeWeightedJaccardDistance(int iBegin, int iEnd, EdgeValue * pEdgeValue)
+{
     double sharedNeighboursWeight = 0;
 
-    for (set<int>::iterator iter = pEdgeValue->pCommonNeighbours->begin();
-         iter != pEdgeValue->pCommonNeighbours->end(); iter++) {
-        if (*iter == iBegin || *iter == iEnd) {
-            continue;
-        }
+    for (set<int>::iterator iter = pEdgeValue->pCommonNeighbours->begin(); iter != pEdgeValue->pCommonNeighbours->end(); iter++)
+    {
         sharedNeighboursWeight += m_cGraph.Weight(iBegin, *iter) + m_cGraph.Weight(iEnd, *iter);
     }
 
+    set<int>* pBeginNeighbours = m_cGraph.GetVertexNeighbours(iBegin);
+    set<int>* pEndNeighbours = m_cGraph.GetVertexNeighbours(iEnd);
     double allNeighboursWeight = 0;
 
-    for (set<int>::iterator iterBegin = allNeighbours.begin(); iterBegin != allNeighbours.end(); iterBegin++) {
-        set<int>::iterator iterEnd = iterBegin;
-        iterEnd++;
 
-        while (iterEnd != allNeighbours.end()) {
-            allNeighboursWeight += m_cGraph.Weight(*iterBegin, *iterEnd);
-            iterEnd++;
-        }
+    for (set<int>::iterator iter = pBeginNeighbours->begin(); iter != pBeginNeighbours->end(); iter++)
+    {
+        allNeighboursWeight += m_cGraph.Weight(iBegin, *iter);
     }
 
-    return 1 - sharedNeighboursWeight / allNeighboursWeight;
+    for (set<int>::iterator iter = pEndNeighbours->begin(); iter != pEndNeighbours->end(); iter++)
+    {
+        allNeighboursWeight += m_cGraph.Weight(iEnd, *iter);
+    }
+
+    return allNeighboursWeight == 0 ? 1 : 1 - sharedNeighboursWeight / allNeighboursWeight;
 }
 
 double CommunityDetection::ComputeUnweightedJaccardDistance(int iBegin, int iEnd, EdgeValue *pEdgeValue) {
@@ -198,8 +207,9 @@ double CommunityDetection::ComputeJaccardDistance(int iBegin, int iEnd, EdgeValu
 
 double CommunityDetection::ComputeDI(int iBegin, int iEnd, EdgeValue *pEdgeValue) {
     return -sin(1 - pEdgeValue->aDistance[m_iCurrentStep])
-           * (1 / (double) (m_cGraph.GetVertexNeighbours(iBegin)->size() - 1)
-              + 1 / (double) (m_cGraph.GetVertexNeighbours(iEnd)->size() - 1));
+
+        * (1 / (double)(m_cGraph.GetVertexNeighbours(iBegin)->size() - 1)
+            + 1 / (double)(m_cGraph.GetVertexNeighbours(iEnd)->size() - 1));
 }
 
 double CommunityDetection::ComputeCI(int iBegin, int iEnd, EdgeValue *pEdgeValue) {
@@ -213,12 +223,9 @@ double CommunityDetection::ComputeCI(int iBegin, int iEnd, EdgeValue *pEdgeValue
             continue;
         }
 
-        dCI += sin(1 - m_cGraph.ActualDistance(iBegin, iSharedVertex, m_iCurrentStep)) *
-               (1 - m_cGraph.ActualDistance(iEnd, iSharedVertex, m_iCurrentStep)) /
-               (m_cGraph.GetVertexNeighbours(iBegin)->size() - 1)
-               + sin(1 - m_cGraph.ActualDistance(iEnd, iSharedVertex, m_iCurrentStep)) *
-                 (1 - m_cGraph.ActualDistance(iBegin, iSharedVertex, m_iCurrentStep)) /
-                 (m_cGraph.GetVertexNeighbours(iEnd)->size() - 1);
+
+        dCI += sin(1 - m_cGraph.Distance(iBegin, iSharedVertex, m_iCurrentStep)) * (1 - m_cGraph.Distance(iEnd, iSharedVertex, m_iCurrentStep)) / (m_cGraph.GetVertexNeighbours(iBegin)->size() - 1)
+            + sin(1 - m_cGraph.Distance(iEnd, iSharedVertex, m_iCurrentStep)) * (1 - m_cGraph.Distance(iBegin, iSharedVertex, m_iCurrentStep)) / (m_cGraph.GetVertexNeighbours(iEnd)->size() - 1);
     }
 
     return -dCI;
@@ -236,17 +243,21 @@ double CommunityDetection::ComputeEI(int iBegin, int iEnd, EdgeValue *pEdgeValue
 double CommunityDetection::ComputePartialEI(int iTarget, int iTargetNeighbour, set<int> &targetEN) {
     double dDistance = 0;
 
-    for (set<int>::iterator iter = targetEN.begin(); iter != targetEN.end(); iter++) {
-        dDistance += sin(1 - m_cGraph.ActualDistance(*iter, iTarget, m_iCurrentStep))
-                     * ComputeInfluence(iTargetNeighbour, *iter)
-                     / (m_cGraph.GetVertexNeighbours(iTarget)->size() - 1);
+
+    for (set<int>::iterator iter = targetEN.begin(); iter != targetEN.end(); iter++)
+    {
+        dDistance += sin(1 - m_cGraph.Distance(*iter, iTarget, m_iCurrentStep))
+            * ComputeInfluence(iTargetNeighbour, *iter)
+            / (m_cGraph.GetVertexNeighbours(iTarget)->size() - 1);
     }
 
     return dDistance;
 }
 
-double CommunityDetection::ComputeInfluence(int iTargetNeighbour, int iENVertex) {
-    double dDistance = 1 - m_cGraph.VirtualDistance(iTargetNeighbour, iENVertex);
+
+double CommunityDetection::ComputeInfluence(int iTargetNeighbour, int iENVertex)
+{
+    double dDistance = 1 - ComputeVirtualDistance(iTargetNeighbour, iENVertex);
 
     if (dDistance >= m_dThreshold)
         return dDistance;
@@ -266,19 +277,52 @@ void CommunityDetection::ComputeCommonNeighbour(int iBegin, int iEnd, EdgeValue 
                     m_cGraph.GetVertexNeighbours(iEnd), pEdgeValue->pCommonNeighbours);
 }
 
-void CommunityDetection::ComputeVirtualDistance(int iBegin, int iEnd) {
-    EdgeValue *pEdgeValue = NULL;
-    if (m_cGraph.AddVirtualEdge(iBegin, iEnd, 0, pEdgeValue)) {
-        ComputeCommonNeighbour(iBegin, iEnd, pEdgeValue);
-        double dDistance = ComputeJaccardDistance(iBegin, iEnd, pEdgeValue);
-        m_cGraph.UpdateVirtualEdge(iBegin, iEnd, dDistance, m_iCurrentStep);
-    }
-}
 
-void CommunityDetection::UpdateENDistance(int iTarget, set<int> &setEN) {
-    for (set<int>::iterator iter = setEN.begin(); iter != setEN.end(); iter++) {
-        ComputeVirtualDistance(iTarget, *iter);
+double CommunityDetection::ComputeVirtualDistance(int iBegin, int iEnd)
+{
+    int iTempBegin = iBegin;
+    int iTempEnd = iEnd;
+
+    Graph::RefineEdgeKey(iTempBegin, iTempEnd);
+
+    EdgeKey edgeKey{ iTempBegin, iTempEnd };
+
+    if (m_dictVirtualEdgeTempResult.count(edgeKey) != 0)
+    {
+        return m_dictVirtualEdgeTempResult[edgeKey];
     }
+
+
+    double dNumerator = 0;
+    set<int>* pBeginNeighbours = m_cGraph.GetVertexNeighbours(iBegin);
+    set<int>* pEndNeighbours = m_cGraph.GetVertexNeighbours(iEnd);
+
+    set<int> setCommonNeighbours;
+
+    SetIntersection(pBeginNeighbours, pEndNeighbours, &setCommonNeighbours);
+
+    for (set<int>::iterator iter = setCommonNeighbours.begin(); iter != setCommonNeighbours.end(); iter++)
+    {
+        dNumerator += (1 - m_cGraph.Distance(iBegin, *iter, m_iCurrentStep)) + (1 - m_cGraph.Distance(iEnd, *iter, m_iCurrentStep));
+    }
+
+    double dDenominator = 0;
+
+    for (set<int>::iterator iter = pBeginNeighbours->begin(); iter != pBeginNeighbours->end(); iter++)
+    {
+        if (*iter != iBegin)
+            dDenominator += (1 - m_cGraph.Distance(iBegin, *iter, m_iCurrentStep));
+    }
+
+    for (set<int>::iterator iter = pEndNeighbours->begin(); iter != pEndNeighbours->end(); iter++)
+    {
+        if (*iter != iEnd)
+            dDenominator += (1 - m_cGraph.Distance(iEnd, *iter, m_iCurrentStep));
+    }
+
+    double dDistance = 1 - dNumerator / dDenominator;
+    m_dictVirtualEdgeTempResult[edgeKey] = dDistance;
+    return dDistance;
 }
 
 CommunityDetection::CommunityDetection(bool bIsWeighted, double dThreshold) {
@@ -301,11 +345,11 @@ void CommunityDetection::OutputCommunities(string &strFileName) {
     cout << "Output Communities Start" << endl;
     const clock_t begin_time = clock();
 
-    for (map<int, set<int> *>::iterator iter = pCommunities->begin(); iter != pCommunities->end(); iter++) {
-        if (iter->second->size() <= 1)
-            continue;
 
-        for (set<int>::iterator iterVertex = iter->second->begin(); iterVertex != iter->second->end(); iterVertex++) {
+    for (map<int, set<int>*>::iterator iter = pCommunities->begin(); iter != pCommunities->end(); iter++)
+    {
+        for (set<int>::iterator iterVertex = iter->second->begin(); iterVertex != iter->second->end(); iterVertex++)
+        {
             out << iter->first << ' ' << *iterVertex << endl;
         }
     }
@@ -316,8 +360,10 @@ void CommunityDetection::OutputCommunities(string &strFileName) {
     out.clear();
 }
 
-void CommunityDetection::OutputEdges(string &strFileName) {
-    map<EdgeKey, EdgeValue *> *pEdges = m_cGraph.GetEdges();
+
+void CommunityDetection::OutputEdges(string& strFileName)
+{
+    map<EdgeKey, EdgeValue*>* pEdges = m_cGraph.GetAllEdges();
     ofstream out(strFileName.c_str(), ios::out);
 
     cout << "Output edges Start" << endl;

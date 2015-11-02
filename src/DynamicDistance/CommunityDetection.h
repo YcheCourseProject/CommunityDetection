@@ -11,14 +11,14 @@ private:
     int m_iCurrentStep;
     double m_dThreshold;
 
+    map<EdgeKey, double> m_dictVirtualEdgeTempResult;
+
 private:
     void SetupGraph(const string &strFileName);
 
     void InitializeGraph();
 
     void DynamicInteraction();
-
-    void OutputCommunities();
 
 private:
     void SetUnion(set<int> *left, set<int> *right, set<int> *dest);
@@ -43,13 +43,10 @@ private:
 
     double ComputeInfluence(int iTargetNeighbour, int iENVertex);
 
-    void ComputeExclusiveNeighbour(int iBegin, int iEnd, EdgeValue *pEdgeValue);
 
-    void ComputeCommonNeighbour(int iBegin, int iEnd, EdgeValue *pEdgeValue);
-
-    void ComputeVirtualDistance(int iBegin, int iEnd);
-
-    void UpdateENDistance(int iTarget, set<int> &setEN);
+    void ComputeExclusiveNeighbour(int iBegin, int iEnd, EdgeValue* pEdgeValue);
+    void ComputeCommonNeighbour(int iBegin, int iEnd, EdgeValue* pEdgeValue);
+    double ComputeVirtualDistance(int iBegin, int iEnd);
 
 public:
     CommunityDetection(bool bIsWeighted, double dThreshold);

@@ -93,6 +93,22 @@ map<int, set<int>*>* ClusteringEvaluation::GenerateAdjecentList(const string & s
     return dictAdjacentList;
 }
 
+void ClusteringEvaluation::ClearResources(map<int, set<int>*>* pTarget)
+{
+    if (pTarget == NULL)
+        return;
+
+    for (map<int, set<int>*>::iterator iter = pTarget->begin(); iter != pTarget->end(); iter++)
+    {
+        if (iter->second != NULL)
+        {
+            delete iter->second;
+        }
+    }
+
+    delete pTarget;
+}
+
 
 double ClusteringEvaluation::SimplyPurity(map<int, set<int>*>* dictTargetCommunities, map<int, set<int>*>* dictGroundTruth)
 {
@@ -283,7 +299,7 @@ double ClusteringEvaluation::Modularity(map<int, set<int>*>* dictTargetCommuniti
     return 2 * dModularity / (4 * iEdgeNumbers);
 }
 
-double ClusteringEvaluation::Ncuts(map<int, set<int>*>* dictTargetCommunities, map<int, set<int>*>* dictAdjacentList)
+double ClusteringEvaluation::Ncut(map<int, set<int>*>* dictTargetCommunities, map<int, set<int>*>* dictAdjacentList)
 {
     double dNcut = 0;
     int iCommunityNumber = dictTargetCommunities->size();
