@@ -94,3 +94,15 @@ int main(int argc, char* argv[])
 
     return 0;
 }
+
+/*
+int main()
+{
+    const string fileName = "C:\\Users\\ssunah\\gitchina\\Community-Detection\\dataset\\small\\polbooks\\polbooks_edges_input.csv";
+    map<int, set<int>* >* pAdjacentList = ClusteringEvaluation::GenerateAdjecentList(fileName);
+    double dCC = ClusteringEvaluation::LocalClusteringCoefficient(pAdjacentList);
+    cout << dCC << endl;
+    ClusteringEvaluation::ClearResources(pAdjacentList);
+    return 0;
+}
+*/
