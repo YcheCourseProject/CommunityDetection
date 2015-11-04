@@ -106,4 +106,6 @@ int main()
     ClusteringEvaluation::ClearResources(pAdjacentList);
     return 0;
 }
+<<<<<<< HEAD
 */
+
