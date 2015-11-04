@@ -36,7 +36,7 @@ void Graph::UpdateEdge(int iBegin, int iEnd, double dNewDistance, int iStep)
 
     if (m_dictEdges.count(edgeKey) == 0)
     {
-        throw new exception("No Such Edges");
+        throw new logic_error("No Such Edges");
     }
 
     m_dictEdges[edgeKey]->aDistance[iStep] = dNewDistance;
@@ -53,7 +53,7 @@ double Graph::Distance(int iBegin, int iEnd, int iStep)
 
     if (m_dictEdges.count(edgeKey) == 0)
     {
-        throw new exception("No edge.");
+        throw new logic_error("No edge.");
     }
 
     return m_dictEdges[edgeKey]->aDistance[iStep];
@@ -132,7 +132,7 @@ set<int>* Graph::GetVertexNeighbours(int iVertexId)
 {
     if (m_dictVertices.count(iVertexId) == 0)
     {
-        throw new exception("No such an iVertexId.");
+        throw new logic_error("No such an iVertexId.");
     }
 
     VertexValue* vertexValue = m_dictVertices[iVertexId];

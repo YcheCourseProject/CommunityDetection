@@ -15,6 +15,7 @@
 #include <math.h>
 #include <string>
 #include "Helper.h"
+#include "string.h"
 
 using namespace std;
 

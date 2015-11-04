@@ -1,3 +1,4 @@
+#include <cmath>
 #include "ClusteringEvaluation.h"
 
 map<int, set<int>*>* ClusteringEvaluation::GenerateCommunities(const string & strFileName)
