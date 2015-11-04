@@ -157,7 +157,7 @@ double ClusteringEvaluation::NMI(map<int, set<int>*>* dictTargetCommunities, map
         aProbabilityMatrix[i] = new double[dictGroundTruth->size()]{ 0 };
     }
 
-    int iVerticesNumber = VerticesNumber(dictTargetCommunities);
+    int iVerticesNumber = VerticesNumberFromCommunities(dictTargetCommunities);
 
     int iRowNumber = 0;
     int iColumnNumber = 0;
@@ -221,7 +221,7 @@ double ClusteringEvaluation::NMI(map<int, set<int>*>* dictTargetCommunities, map
 
 double ClusteringEvaluation::ARI(map<int, set<int>*>* dictTargetCommunities, map<int, set<int>*>* dictGroundTruth)
 {
-    int iVertexNumber = VerticesNumber(dictTargetCommunities);
+    int iVertexNumber = VerticesNumberFromCommunities(dictTargetCommunities);
 
     int iAllParisSum = TwoCombination(iVertexNumber);
     int iTargetPairsSum = TwoCombinationSum(dictTargetCommunities);
@@ -236,7 +236,7 @@ double ClusteringEvaluation::ARI(map<int, set<int>*>* dictTargetCommunities, map
 
 double ClusteringEvaluation::RI(map<int, set<int>*>* dictTargetCommunities, map<int, set<int>*>* dictGroundTruth)
 {
-    int iVertexNumber = VerticesNumber(dictTargetCommunities);
+    int iVertexNumber = VerticesNumberFromCommunities(dictTargetCommunities);
 
     int iAllParisSum = TwoCombination(iVertexNumber);
     int iTargetPairsSum = TwoCombinationSum(dictTargetCommunities);
@@ -368,7 +368,49 @@ int ClusteringEvaluation::TwoCombination(int iNumber)
     return iNumber * (iNumber - 1) / 2;
 }
 
-int ClusteringEvaluation::VerticesNumber(map<int, set<int>*>* pTarget)
+double ClusteringEvaluation::AverageDegree(map<int, set<int>*>* dictAdjacentList)
+{
+    return  EdgesNumber(dictAdjacentList) / (double)VerticesNumberFromAdjacentList(dictAdjacentList);
+}
+
+double ClusteringEvaluation::LocalClusteringCoefficient(map<int, set<int>*>* dictAdjacentList)
+{
+    if (dictAdjacentList->size() == 0)
+        return 0.0;
+
+    double dClusteringCoefficient = 0;
+    for (map<int, set<int>*>::iterator iter = dictAdjacentList->begin(); iter != dictAdjacentList->end(); iter++)
+    {
+        set<int>* pNeighbours = iter->second;
+
+        int iNeighboursEdgeNumber = 0;
+
+        for (set<int>::iterator iterSrc = pNeighbours->begin(); iterSrc != pNeighbours->end(); iterSrc++)
+        {
+            set<int>::iterator iterDest = iterSrc;
+            iterDest++;
+
+            while (iterDest != pNeighbours->end())
+            {
+                if ((*dictAdjacentList)[*iterSrc]->count(*iterDest) != 0)
+                {
+                    iNeighboursEdgeNumber++;
+                }
+
+                iterDest++;
+            }
+        }
+
+        if (pNeighbours->size() > 1)
+        {
+            dClusteringCoefficient += iNeighboursEdgeNumber / (double)(pNeighbours->size() * (pNeighbours->size() - 1));
+        }
+    }
+
+    return 2 * dClusteringCoefficient / dictAdjacentList->size();
+}
+
+int ClusteringEvaluation::VerticesNumberFromCommunities(map<int, set<int>*>* pTarget)
 {
     int iVerticesNumber = 0;
 
@@ -378,6 +420,23 @@ int ClusteringEvaluation::VerticesNumber(map<int, set<int>*>* pTarget)
     }
 
     return iVerticesNumber;
+}
+
+int ClusteringEvaluation::VerticesNumberFromAdjacentList(map<int, set<int>*>* dictAdjacentList)
+{
+    return dictAdjacentList->size();
+}
+
+int ClusteringEvaluation::EdgesNumber(map<int, set<int>*>* dictAdjacentList)
+{
+    int iEdgesNumber = 0;
+
+    for (map<int, set<int>*>::iterator iter = dictAdjacentList->begin(); iter != dictAdjacentList->end(); iter++)
+    {
+        iEdgesNumber += iter->second->size();
+    }
+
+    return iEdgesNumber;
 }
 
 int ClusteringEvaluation::ComputeVolumeSum(set<int>* pSrcCommunity, map<int, set<int>*>* dictAdjacentList)
