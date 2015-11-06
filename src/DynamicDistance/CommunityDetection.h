@@ -12,7 +12,7 @@ private:
     double m_dThreshold;
 
     map<EdgeKey, double> m_dictVirtualEdgeTempResult;
-
+    map<EdgeKey, double> m_dictVirtualEdgeConverge;
 private:
     void SetupGraph(const string &strFileName);
 
@@ -21,32 +21,26 @@ private:
     void DynamicInteraction();
 
 private:
-    void SetUnion(set<int> *left, set<int> *right, set<int> *dest);
 
-    void SetDifference(set<int> *left, set<int> *right, set<int> *dest);
+    void SetUnion(set<int>* left, set<int>* right, set<int>* dest);
+    void SetDifference(set<int>* left, set<int>* right, set<int>* dest);
+    void SetIntersection(set<int>* left, set<int>* right, set<int>* dest);
 
-    void SetIntersection(set<int> *left, set<int> *right, set<int> *dest);
+    double ComputeWeightedJaccardDistance(int iBegin, int iEnd, EdgeValue* pEdgeValue);
+    double ComputeUnweightedJaccardDistance(int iBegin, int iEnd, EdgeValue* pEdgeValue);
+    double ComputeJaccardDistance(int iBegin, int iEnd, EdgeValue* pEdgeValue);
 
-    double ComputeWeightedJaccardDistance(int iBegin, int iEnd, EdgeValue *pEdgeValue);
+    double ComputeDI(int iBegin, int iEnd, EdgeValue* pEdgeValue);
+    double ComputeCI(int iBegin, int iEnd, EdgeValue* pEdgeValue, bool& bConverge);
+    double ComputeEI(int iBegin, int iEnd, EdgeValue* pEdgeValue, bool& bConverge);
+    double ComputePartialEI(int iTarget, int iTargetNeighbour, set<int>& targetEN, bool& bConverge);
+    double ComputeInfluence(int iTargetNeighbour, int iENVertex, bool& bConverge);
 
-    double ComputeUnweightedJaccardDistance(int iBegin, int iEnd, EdgeValue *pEdgeValue);
-
-    double ComputeJaccardDistance(int iBegin, int iEnd, EdgeValue *pEdgeValue);
-
-    double ComputeDI(int iBegin, int iEnd, EdgeValue *pEdgeValue);
-
-    double ComputeCI(int iBegin, int iEnd, EdgeValue *pEdgeValue);
-
-    double ComputeEI(int iBegin, int iEnd, EdgeValue *pEdgeValue);
-
-    double ComputePartialEI(int iTarget, int iTargetNeighbour, set<int> &targetEN);
-
-    double ComputeInfluence(int iTargetNeighbour, int iENVertex);
 
 
     void ComputeExclusiveNeighbour(int iBegin, int iEnd, EdgeValue* pEdgeValue);
     void ComputeCommonNeighbour(int iBegin, int iEnd, EdgeValue* pEdgeValue);
-    double ComputeVirtualDistance(int iBegin, int iEnd);
+    double ComputeVirtualDistance(int iBegin, int iEnd, bool& bConverge);
 
 public:
     CommunityDetection(bool bIsWeighted, double dThreshold);

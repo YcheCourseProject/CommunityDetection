@@ -261,43 +261,27 @@ double ClusteringEvaluation::Modularity(map<int, set<int>*>* dictTargetCommuniti
 
     for (map<int, set<int>*>::iterator iter = dictTargetCommunities->begin(); iter != dictTargetCommunities->end(); iter++)
     {
-        set<int>* pCurrentCommunity = iter->second;
+        double dCommunityDegree = 0;
+        double dInCommunityDegree = 0;
+        set<int>* pCommunities = iter->second;
 
-        for (set<int>::iterator iterSrcVertex = pCurrentCommunity->begin(); iterSrcVertex != pCurrentCommunity->end(); iterSrcVertex++)
+        for (set<int>::iterator iterVertex = pCommunities->begin(); iterVertex != pCommunities->end(); iterVertex++)
         {
-            int iSrcVertex = *iterSrcVertex;
-
-            bool bIsSameCommunity = true;
-
-            for (map<int, set<int>*>::iterator iterDestCommunities = iter; iterDestCommunities != dictTargetCommunities->end(); iterDestCommunities++)
+            set<int>* pNeighbours = (*dictAdjacentList)[*iterVertex];
+            dCommunityDegree += pNeighbours->size();
+            for (set<int>::iterator iterDest = pNeighbours->begin(); iterDest != pNeighbours->end(); iterDest++)
             {
-                set<int>::iterator iterDestVertex = bIsSameCommunity ? iterSrcVertex : iterDestCommunities->second->begin();
-
-                if (bIsSameCommunity)
+                if (pCommunities->count(*iterDest) != 0)
                 {
-                    iterDestVertex++;
+                    dInCommunityDegree += 0.5;
                 }
-
-                while (iterDestVertex != iterDestCommunities->second->end())
-                {
-                    int iDestVertex = *iterDestVertex;
-
-                    int iLinkedEdgeNumber = (*dictAdjacentList)[iSrcVertex]->count(iDestVertex);
-                    int iSameCommunity = bIsSameCommunity ? 1 : -1;
-                    int iSrcVertexDegree = (*dictAdjacentList)[iSrcVertex]->size();
-                    int iDestVertexDegree = (*dictAdjacentList)[iDestVertex]->size();
-
-                    dModularity += (iLinkedEdgeNumber - iSrcVertexDegree * iDestVertexDegree / (double)(2 * iEdgeNumbers)) * iSameCommunity;
-
-                    iterDestVertex++;
-                }
-
-                bIsSameCommunity = false;
             }
         }
+
+        dModularity += dInCommunityDegree / iEdgeNumbers - pow(dCommunityDegree / (2 * iEdgeNumbers), 2);
     }
 
-    return 2 * dModularity / (4 * iEdgeNumbers);
+    return dModularity;
 }
 
 double ClusteringEvaluation::Ncut(map<int, set<int>*>* dictTargetCommunities, map<int, set<int>*>* dictAdjacentList)
