@@ -23,7 +23,9 @@ function runLouvain(){
                 temp_tree_file=${init_infile//edges_input.csv/temp_input_louvain.tree}
                 temp_clu_file=${init_infile//edges_input.csv/clu_louvain.temp}
                 ./convert -i $edge_outfile -o $convert_bin_file
+                startTime=$(date +%s.%Nns)
                 ./community $convert_bin_file -l -1 > $temp_tree_file
+                endTime=$(date +%s.%Nns)
                 ./hierarchy  $temp_tree_file -l 1 > $temp_clu_file
 
                 #output processing
@@ -40,27 +42,28 @@ function runLouvain(){
                 if [[ $truth_file_num == "1" ]];then
                     if [[ $truthfile =~ .*amazon.* ]];then
                         echo "amazon"
-                        measurement_out_file=${clu_out_file//louvain.clu/measurement_louvain.us}
+                        measurement_out_file=${init_infile//edges_input.csv/measurement_louvain.us}
                         echo $clu_out_file
                         echo $init_infile 
                         echo $measurement_out_file
                         attractor -E US $clu_out_file $init_infile $measurement_out_file
-
                     else
                         ground_truth_file=$1"/"$truthfile
-                        measurement_out_file=${clu_out_file//louvain.clu/measurement_louvain.s}
+                        measurement_out_file=${init_infile//edges_input.csv/measurement_louvain.s}
                         attractor -E S  $clu_out_file $ground_truth_file $measurement_out_file
                     fi
                 else
                     echo "hello"
-                    measurement_out_file=${clu_out_file//louvain.clu/measurement_louvain.us}
+                    measurement_out_file=${init_infile//edges_input.csv/measurement_louvain.us}
                     echo $clu_out_file" "$init_infile" "$measurement_out_file
                     attractor -E US $clu_out_file $init_infile $measurement_out_file
                 fi
+                echo "startTime:"$startTime >> $measurement_out_file
+                echo "endTime:"$endTime >> $measurement_out_file
             fi
         fi
     done
 }
-INIT_PATH="/home/cheyulin/Community-Detection/dataset/big/amazon"
+INIT_PATH="/home/cheyulin/Community-Detection/dataset/synthetic"
 runLouvain $INIT_PATH
 

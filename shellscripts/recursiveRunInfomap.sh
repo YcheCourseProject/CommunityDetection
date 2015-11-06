@@ -18,7 +18,9 @@ function runInfomap(){
                 java $java_infomap_ip_class $init_infile $map_outfile $edge_outfile
                 
                 #run Infomap
+                startTime=$(date +%s.%Nns)
                 Infomap -i --link-list -N 10 --tree --map --clu  $edge_outfile $1
+                endTime=$(date +%s.%Nns)
                 temp_clu_file=${init_infile//edges_input.csv/clu_infomap.temp}
                 temp_tree_file=${init_infile//edges_input.csv/tree_infomap.temp}
                 temp_map_file=${init_infile//edges_input.csv/map_infomap.temp}
@@ -52,7 +54,11 @@ function runInfomap(){
                     measurement_out_file=${init_infile//edges_input.csv/measurement_infomap.us}
                     echo $clu_out_file" "$init_infile" "$measurement_out_file
                     attractor -E US $clu_out_file $init_infile $measurement_out_file
+               
                 fi
+
+                echo "startTime:"$startTime >> $measurement_out_file
+                echo "endTime:"$endTime >> $measurement_out_file
             fi
         fi
     done

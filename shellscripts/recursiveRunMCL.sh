@@ -11,12 +11,14 @@ function runMcl(){
                 #run Mcl
                 init_infile=$1"/"$file
                 temp_clu_file=${init_infile//input.csv/output_mcl.csv}
+                startTime=$(date +%s.%Nns)
                 if [[ $file =~ .*road.* ]];then
                     echo "run road with inflation 1.4"
                     mcl $init_infile --abc -I 1.4 -o $temp_clu_file   
                 else
                     mcl $init_infile --abc -I 2 -o $temp_clu_file                     
                 fi
+                endTime=$(date +%s.%Nns)
 
                 #output processing
                 java_path="/home/cheyulin/Community-Detection/java_project/bin"
@@ -32,8 +34,8 @@ function runMcl(){
                 if [[ $truth_file_num == "1" ]];then
                     if [[ $truthfile =~ .*amazon.* ]];then
                         echo "amazon"
-                        #measurement_out_file=${init_infile//edges_input.clu/measurement_mcl.us}
-                        #attractor -E US $clu_out_file $init_infile $measurement_out_file
+                        measurement_out_file=${init_infile//edges_input.clu/measurement_mcl.us}
+                        attractor -E US $clu_out_file $init_infile $measurement_out_file
                     else
                         ground_truth_file=$1"/"$truthfile
                         measurement_out_file=${init_infile//edges_input.csv/measurement_mcl.s}
@@ -45,11 +47,14 @@ function runMcl(){
                     echo $clu_out_file" "$init_infile" "$measurement_out_file
                     attractor -E US $clu_out_file $init_infile $measurement_out_file
                 fi
+
+                echo "startTime:"$startTime >> $measurement_out_file
+                echo "endTime:"$endTime >> $measurement_out_file
             fi
         fi
     done
 }
 
-INIT_PATH="/home/cheyulin/Community-Detection/dataset/synthetic"
+INIT_PATH="/home/cheyulin/Community-Detection/dataset/big/collaboration"
 runMcl $INIT_PATH
 

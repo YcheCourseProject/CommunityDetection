@@ -1,0 +1,5 @@
+ARI 0
+InvPur 1
+NMI 0
+RI 0.228916
+SimPur 0.32

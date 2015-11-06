@@ -19,8 +19,9 @@ function runAttractor(){
                     if((lamda == 10));then
                         lamda_str="1.0";
                     fi
+                    startTime=$(date +%s.%Nns)
                     attractor -A $lamda_str 0 $init_infile $clu_out_file $components_outfile             
-                    
+                    endTime=$(date +%s.%Nns)
 
                     #measurement
                     truthfile=${file//edges_input.csv/ground_truth.csv}
@@ -30,8 +31,8 @@ function runAttractor(){
                     if [[ $truth_file_num == "1" ]];then
                         if [[ $truthfile =~ .*amazon.* ]];then
                             echo "amazon"
-                            #measurement_out_file=${init_infile//edges_input.clu/$lamda"_"measurement_attractor.us}
-                            #attractor -E US $clu_out_file $init_infile $measurement_out_file
+                            measurement_out_file=${init_infile//edges_input.clu/$lamda"_"measurement_attractor.us}
+                            attractor -E US $clu_out_file $init_infile $measurement_out_file
                         else
                             echo "s"
                             ground_truth_file=$1"/"$truthfile
@@ -44,14 +45,15 @@ function runAttractor(){
                         echo $clu_out_file" "$init_infile" "$measurement_out_file
                         attractor -E US $clu_out_file $init_infile $measurement_out_file
                     fi
-                    
+                    echo "startTime:"$startTime >> $measurement_out_file
+                    echo "endTime:"$endTime >> $measurement_out_file
                     let lamda+=1
                 done
             fi
         fi
     done
 }
-INIT_PATH="/home/cheyulin/Community-Detection/dataset/synthetic"
+INIT_PATH="/home/cheyulin/Community-Detection/dataset/small"
 
 runAttractor $INIT_PATH
 
