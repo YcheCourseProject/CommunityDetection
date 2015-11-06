@@ -5,7 +5,7 @@ src/.idea/*
 src/Experiment/*
 src/CMakeLists.txt
 build/*
-java_io/.settings/
+*/.settings/
 *.project
 *.classpath
 *.class
