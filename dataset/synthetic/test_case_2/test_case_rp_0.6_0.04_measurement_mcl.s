@@ -3,3 +3,5 @@ InvPur 1
 NMI 1
 RI 1
 SimPur 1
+startTime:1446811511.900953719ns
+endTime:1446811511.973509980ns

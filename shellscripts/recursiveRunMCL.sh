@@ -55,6 +55,6 @@ function runMcl(){
     done
 }
 
-INIT_PATH="/home/cheyulin/Community-Detection/dataset/big/collaboration"
+INIT_PATH="/home/cheyulin/Community-Detection/dataset/synthetic"
 runMcl $INIT_PATH
 
