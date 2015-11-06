@@ -1,12 +1,20 @@
 #!/bin/bash
-function recursiveRunMCL(){
+function runMetis(){
     for file in ` ls $1 `
     do
         if [ -d $1"/"$file ]
         then
-             recursiveRunMCL $1"/"$file
+             runMetis $1"/"$file
         else
-            #echo $file
+            #input processing
+                java_path="/home/cheyulin/Community-Detection/java_project/bin"
+                java_louvain_ip_class="ip.LouvainIP"
+                cd $java_path
+                init_infile=$1"/"$file
+                map_outfile=${init_infile//edges_input.csv/node_name_index1_map_metis.temp}
+                edge_outfile=${init_infile//input.csv/index1_input_metis.temp}
+                java $java_louvain_ip_class $init_infile $map_outfile $edge_outfile
+
             if [[ $file =~ .*[0-9]+.csv ]]
             then
                 myfile=$1"/"$file
@@ -23,5 +31,5 @@ function recursiveRunMCL(){
     done
 }
 INIT_PATH="/home/cheyulin/ClionProjects/Community-Detection/dataset/"
-recursiveRunMCL $INIT_PATH
+runMetis $INIT_PATH
 

@@ -7,7 +7,7 @@ function removeFiles(){
              removeFiles $1"/"$file
         else
             #echo $file
-            if [[ $file =~ .*infomap.*$ || $file =~ .*metis.*$ || $file =~ .*mcl.*$ || $file =~ .*pname.*$ || $file =~ .*map.*$ || $file =~ .*clu$ || $file =~ .*map$ || $file =~ .*tree$ ]]
+            if [[ $file =~ .*infomap.*$ || $file =~ .*metis.*$ || $file =~ .*mcl.*$ || $file =~ .*pname.*$ || $file =~ .*map.*$ || $file =~ .*clu$ || $file =~ .*map$ || $file =~ .*tree$ || $file =~ .*output.*$ || $file =~ .*louvain.* || $file =~ .*attractor.* ]]
             then
                 myfile=$1"/"$file
                 echo $myfile
@@ -16,6 +16,6 @@ function removeFiles(){
         fi
     done
 }
-INIT_PATH="/home/cheyulin/ClionProjects/Community-Detection/dataset/"
+INIT_PATH="/home/cheyulin/Community-Detection/dataset/"
 removeFiles $INIT_PATH
 

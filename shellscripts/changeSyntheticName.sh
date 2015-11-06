@@ -10,13 +10,12 @@ function ergodic(){
             if [[ $file =~ .*[0-9]+.csv ]]
             then
                 myfile=$1"/"$file
-                echo "hello"
 	            echo "old:"${myfile}
-                ` mv $myfile ${myfile//.csv/_input.csv} `
+                mv $myfile ${myfile//.csv/_edges_input.csv} 
             fi
         fi
     done
 }
-INIT_PATH="/home/cheyulin/ClionProjects/Community-Detection/dataset/synthetic"
+INIT_PATH="/home/cheyulin/Community-Detection/dataset/synthetic"
 ergodic $INIT_PATH
 
