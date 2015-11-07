@@ -32,16 +32,20 @@ private:
     double ComputeCI(int iBegin, int iEnd, EdgeValue* pEdgeValue, bool& bConverge);
     double ComputeEI(int iBegin, int iEnd, EdgeValue* pEdgeValue, bool& bConverge);
     double ComputePartialEI(int iTarget, int iTargetNeighbour, set<int>& targetEN, bool& bConverge);
-    double ComputeInfluence(int iTargetNeighbour, int iENVertex, bool& bConverge);
+    double ComputeInfluence(int iTargetNeighbour, int iENVertex, int iTarget, bool& bConverge);
 
     void ComputeExclusiveNeighbour(int iBegin, int iEnd, EdgeValue* pEdgeValue);
     void ComputeCommonNeighbour(int iBegin, int iEnd, EdgeValue* pEdgeValue);
-    double ComputeVirtualDistance(int iBegin, int iEnd, bool& bConverge);
+    double ComputeVirtualDistance(int iBegin, int iEnd, int iTarget, bool& bConverge);
 
 public:
     CommunityDetection(bool bIsWeighted, double dThreshold);
     void Execute(const string& strFileName);
     void OutputCommunities(string& strFileName);
     void OutputEdges(string& strFileName);
+    static long iVirtualEdgeNumber;
+    static long long iVirtualComputationNumber;
+    static long iCommonEdgeNumber;
+    static long long iCommonComputationNumber;
 };
 #endif

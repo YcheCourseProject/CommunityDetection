@@ -1,5 +1,10 @@
 #include "CommunityDetection.h"
 
+long long CommunityDetection::iCommonComputationNumber = 0;
+long CommunityDetection::iCommonEdgeNumber = 0;
+long long CommunityDetection::iVirtualComputationNumber = 0;
+long CommunityDetection::iVirtualEdgeNumber = 0;
+
 void CommunityDetection::SetupGraph(const string & strFileName)
 {
     ifstream in(strFileName.c_str(), ios::in);
@@ -91,6 +96,8 @@ void CommunityDetection::DynamicInteraction()
         int iConvergeNumber = 0;
 
         int j = 0;
+        long long ciTime = 0;
+        long eiTime = 0;
         for (map<EdgeKey, EdgeValue*>::iterator iter = pEdges->begin(); iter != pEdges->end(); iter++)
         {
             EdgeValue* pEdgeValue = iter->second;
@@ -100,9 +107,12 @@ void CommunityDetection::DynamicInteraction()
                 bool bConverge = true;
 
                 double dDI = ComputeDI(iter->first.iBegin, iter->first.iEnd, pEdgeValue);
+                const clock_t cibegin_time = clock();
                 double dCI = ComputeCI(iter->first.iBegin, iter->first.iEnd, pEdgeValue, bConverge);
+                const clock_t eiBegin_time = clock();
+                ciTime += eiBegin_time - cibegin_time;
                 double dEI = ComputeEI(iter->first.iBegin, iter->first.iEnd, pEdgeValue, bConverge);
-
+                eiTime += clock() - eiBegin_time;
                 double delta = dDI + dCI + dEI;
 
                 if (bConverge)
@@ -137,15 +147,24 @@ void CommunityDetection::DynamicInteraction()
             if (++j % 100000 == 0)
             {
                 cout << "LineNumber: " << j << endl;
+                cout << "CI Time: " << ciTime << endl;
+                cout << "EI Time: " << eiTime << endl;
+                cout << "CI Computation: " << iCommonComputationNumber << endl;
+                cout << "EI Edge: " << iVirtualEdgeNumber << endl;
+                cout << "EI Computation: " << iVirtualComputationNumber << endl;
             }
         }
-
         m_dictVirtualEdgeTempResult.clear();
         m_dictVirtualEdgeConverge.clear();
-        
-        if (++i % 1 == 0)
-            cout << "Iteration: " << i << ", The Number of Converge Edges: " << iConvergeNumber
+
+        cout << "Iteration: " << i << ", The Number of Converge Edges: " << iConvergeNumber
             << ", The Number of Left Edges: " << m_cGraph.GetAllEdges()->size() - iConvergeNumber << endl;
+        cout << "LineNumber: " << j << endl;
+        cout << "CI Time: " << ciTime << endl;
+        cout << "EI Time: " << eiTime << endl;
+        cout << "CI Computation: " << iCommonComputationNumber << endl;
+        cout << "EI Edge: " << iVirtualEdgeNumber << endl;
+        cout << "EI Computation: " << iVirtualComputationNumber << endl;
 
         Helper::UpdateStep(m_iCurrentStep);
     }
@@ -254,6 +273,8 @@ double CommunityDetection::ComputeCI(int iBegin, int iEnd, EdgeValue * pEdgeValu
 
         dCI += sin(1 - dBegin) * (1 - dEnd) / (m_cGraph.GetVertexNeighbours(iBegin)->size() - 1)
             + sin(1 - dEnd) * (1 - dBegin) / (m_cGraph.GetVertexNeighbours(iEnd)->size() - 1);
+
+        iCommonComputationNumber++;
     }
 
     return -dCI;
@@ -275,17 +296,18 @@ double CommunityDetection::ComputePartialEI(int iTarget, int iTargetNeighbour, s
 
     for (set<int>::iterator iter = targetEN.begin(); iter != targetEN.end(); iter++)
     {
+        ++iVirtualEdgeNumber;
         dDistance += sin(1 - m_cGraph.Distance(*iter, iTarget, m_iCurrentStep))
-            * ComputeInfluence(iTargetNeighbour, *iter, bConverge)
+            * ComputeInfluence(iTargetNeighbour, *iter, iTarget, bConverge)
             / (m_cGraph.GetVertexNeighbours(iTarget)->size() - 1);
     }
 
     return dDistance;
 }
 
-double CommunityDetection::ComputeInfluence(int iTargetNeighbour, int iENVertex, bool& bConverge)
+double CommunityDetection::ComputeInfluence(int iTargetNeighbour, int iENVertex, int iTarget, bool& bConverge)
 {
-    double dDistance = 1 - ComputeVirtualDistance(iTargetNeighbour, iENVertex, bConverge);
+    double dDistance = 1 - ComputeVirtualDistance(iTargetNeighbour, iENVertex, iTarget, bConverge);
 
     if (dDistance >= m_dThreshold)
         return dDistance;
@@ -305,7 +327,7 @@ void CommunityDetection::ComputeCommonNeighbour(int iBegin, int iEnd, EdgeValue 
         m_cGraph.GetVertexNeighbours(iEnd), pEdgeValue->pCommonNeighbours);
 }
 
-double CommunityDetection::ComputeVirtualDistance(int iBegin, int iEnd, bool& bConverge)
+double CommunityDetection::ComputeVirtualDistance(int iBegin, int iEnd, int iTarget, bool& bConverge)
 {
     int iTempBegin = iBegin;
     int iTempEnd = iEnd;
@@ -334,7 +356,7 @@ double CommunityDetection::ComputeVirtualDistance(int iBegin, int iEnd, bool& bC
     {
         double dBegin = m_cGraph.Distance(iBegin, *iter, m_iCurrentStep);
         double dEnd = m_cGraph.Distance(iEnd, *iter, m_iCurrentStep);
-        if (bTempConverge || bConverge)
+        if ((bTempConverge || bConverge) && *iter != iTarget)
         {
             if (dBegin < 1 - PRECISE && dBegin > 0 + PRECISE)
             {
@@ -348,6 +370,8 @@ double CommunityDetection::ComputeVirtualDistance(int iBegin, int iEnd, bool& bC
 
         }
         dNumerator += (1 - dBegin) + (1 - dEnd);
+
+        iVirtualComputationNumber++;
     }
 
     double dDenominator = 0;
@@ -357,7 +381,7 @@ double CommunityDetection::ComputeVirtualDistance(int iBegin, int iEnd, bool& bC
         if (*iter != iBegin)
         {
             double dBegin = m_cGraph.Distance(iBegin, *iter, m_iCurrentStep);
-            if (bTempConverge || bConverge)
+            if ((bTempConverge || bConverge) && *iter != iTarget)
             {
                 if (dBegin < 1 - PRECISE && dBegin > 0 + PRECISE)
                 {
@@ -367,6 +391,8 @@ double CommunityDetection::ComputeVirtualDistance(int iBegin, int iEnd, bool& bC
             }
             dDenominator += (1 - dBegin);
         }
+
+        iVirtualComputationNumber++;
     }
 
     for (set<int>::iterator iter = pEndNeighbours->begin(); iter != pEndNeighbours->end(); iter++)
@@ -374,7 +400,7 @@ double CommunityDetection::ComputeVirtualDistance(int iBegin, int iEnd, bool& bC
         if (*iter != iEnd)
         {
             double dEnd = m_cGraph.Distance(iEnd, *iter, m_iCurrentStep);
-            if (bTempConverge || bConverge)
+            if ((bTempConverge || bConverge) && *iter != iTarget)
             {
                 if (dEnd < 1 - PRECISE && dEnd > 0 + PRECISE)
                 {
@@ -384,6 +410,7 @@ double CommunityDetection::ComputeVirtualDistance(int iBegin, int iEnd, bool& bC
             }
             dDenominator += (1 - dEnd);
         }
+        iVirtualComputationNumber++;
     }
 
     double dDistance = 1 - dNumerator / dDenominator;
@@ -397,6 +424,10 @@ CommunityDetection::CommunityDetection(bool bIsWeighted, double dThreshold)
     m_bIsWeighted = bIsWeighted;
     m_dThreshold = dThreshold;
     m_iCurrentStep = 0;
+    iVirtualEdgeNumber = 0;
+    iVirtualComputationNumber = 0;
+    iCommonComputationNumber = 0;
+    iCommonEdgeNumber = 0;
 }
 
 void CommunityDetection::Execute(const string & strFileName)
