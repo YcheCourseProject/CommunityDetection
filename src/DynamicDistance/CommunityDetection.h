@@ -12,6 +12,7 @@ private:
     double m_dThreshold;
 
     map<EdgeKey, double> m_dictVirtualEdgeTempResult;
+    map<int, int> m_dictInteration;
 
 private:
     void SetupGraph(const string &strFileName);
@@ -48,6 +49,7 @@ public:
     void Execute(const string& strFileName);
     void OutputCommunities(string& strFileName);
     void OutputEdges(string& strFileName);
+    void OutputIterationResult(string& strFileName);
     static long iVirtualEdgeNumber;
     static long long iVirtualCommonComputationNumber;
     static long long iVirtualEnNumber;

@@ -24,6 +24,8 @@ int main(int argc, char* argv[])
         string strInputFileName(argv[4]);
         string strOutputCommunitiesFileName(argv[5]);
         string strOutputEdgesFileName(argv[6]);
+
+        string strOutputIterationResult = strOutputCommunitiesFileName + ".iter";
         int iWinSize = atoi(argv[7]) == 0 ? DEFAULT_WINDOWS_SIZE : atoi(argv[7]);
         EdgeValue::initWindowSize(iWinSize);
 
@@ -31,6 +33,7 @@ int main(int argc, char* argv[])
         communityDetection.Execute(strInputFileName);
         communityDetection.OutputCommunities(strOutputCommunitiesFileName);
         communityDetection.OutputEdges(strOutputEdgesFileName);
+        communityDetection.OutputIterationResult(strOutputIterationResult);
     }
     else if (strcmp(argv[1], EVALUATION_MODE) == 0)
     {
@@ -98,17 +101,4 @@ int main(int argc, char* argv[])
 
     return 0;
 }
-
-/*
-int main()
-{
-    const string fileName = "C:\\Users\\ssunah\\gitchina\\Community-Detection\\dataset\\small\\polbooks\\polbooks_edges_input.csv";
-    map<int, set<int>* >* pAdjacentList = ClusteringEvaluation::GenerateAdjecentList(fileName);
-    double dCC = ClusteringEvaluation::LocalClusteringCoefficient(pAdjacentList);
-    cout << dCC << endl;
-    ClusteringEvaluation::ClearResources(pAdjacentList);
-    return 0;
-}
-<<<<<<< HEAD
-*/
 
