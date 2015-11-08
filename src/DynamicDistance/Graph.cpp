@@ -76,6 +76,34 @@ double Graph::Weight(int iBegin, int iEnd)
     return m_dictEdges[edgeKey]->dWeight;
 }
 
+double Graph::GetVertexWeightSum(int iVertexId, int iStep)
+{
+    if (m_dictVertices.count(iVertexId) == 0)
+    {
+        throw new exception("Vertex is not exist.");
+    }
+
+    return m_dictVertices[iVertexId]->aWeightSum[iStep];
+}
+
+void Graph::AddVertexWeight(int iVertexId, double dWeight, int iStep)
+{
+    if (m_dictVertices.count(iVertexId) == 0)
+    {
+        throw new exception("Vertex is not exist.");
+    }
+
+    m_dictVertices[iVertexId]->aWeightSum[iStep] += 1 - dWeight;
+}
+
+void Graph::ClearVertexWeight(int iStep)
+{
+    for (map<int, VertexValue*>::iterator iter = m_dictVertices.begin(); iter != m_dictVertices.end(); iter++)
+    {
+        iter->second->aWeightSum[iStep] = 0;
+    }
+}
+
 map<int, set<int>* >* Graph::FindAllConnectedComponents()
 {
     set<int> setVisitedVertices;
@@ -150,7 +178,10 @@ void Graph::AddVertex(int iBegin, int iEnd)
     if (m_dictVertices.count(iBegin) == 0)
     {
         m_dictVertices[iBegin] = new VertexValue();
+        m_dictVertices[iBegin]->aWeightSum[0] = 0;
+        m_dictVertices[iBegin]->aWeightSum[1] = 0;
         m_dictVertices[iBegin]->pNeighbours = new set<int>();
+        
         m_dictVertices[iBegin]->pNeighbours->insert(iBegin);
     }
 

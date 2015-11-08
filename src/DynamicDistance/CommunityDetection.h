@@ -44,7 +44,8 @@ public:
     void OutputCommunities(string& strFileName);
     void OutputEdges(string& strFileName);
     static long iVirtualEdgeNumber;
-    static long long iVirtualComputationNumber;
+    static long long iVirtualCommonComputationNumber;
+    static long long iVirtualEnNumber;
     static long iCommonEdgeNumber;
     static long long iCommonComputationNumber;
 };

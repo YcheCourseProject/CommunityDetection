@@ -50,6 +50,7 @@ struct EdgeValue
 struct VertexValue
 {
     set<int>* pNeighbours;
+    double aWeightSum[STEP_LENGTH];
 };
 
 class Graph
@@ -68,7 +69,9 @@ public:
     void UpdateEdge(int iBegin, int iEnd, double dNewDistance, int iStep);
     double Distance(int iBegin, int iEnd, int iStep);
     double Weight(int iBegin, int iEnd);
-
+    double GetVertexWeightSum(int iVertexId, int iStep);
+    void AddVertexWeight(int iVertexId, double dWeight, int iStep);
+    void ClearVertexWeight(int iStep);
     map<int, set<int>* >* FindAllConnectedComponents();
     map<EdgeKey, EdgeValue*>* GetAllEdges();
     set<int>* GetVertexNeighbours(int iVertexId);
