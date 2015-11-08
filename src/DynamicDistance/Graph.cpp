@@ -1,4 +1,5 @@
 #include "Graph.h"
+int EdgeValue::iWindowSize = DEFAULT_WINDOWS_SIZE;
 
 bool Graph::AddEdge(int iBegin, int iEnd, double dWeight, EdgeValue* &pNewEdgeValue)
 {
@@ -76,6 +77,34 @@ double Graph::Weight(int iBegin, int iEnd)
     return m_dictEdges[edgeKey]->dWeight;
 }
 
+double Graph::GetVertexWeightSum(int iVertexId, int iStep)
+{
+    if (m_dictVertices.count(iVertexId) == 0)
+    {
+        throw new runtime_error("Vertex is not exist.");
+    }
+
+    return m_dictVertices[iVertexId]->aWeightSum[iStep];
+}
+
+void Graph::AddVertexWeight(int iVertexId, double dDistance, int iStep)
+{
+    if (m_dictVertices.count(iVertexId) == 0)
+    {
+        throw new runtime_error("Vertex is not exist.");
+    }
+
+    m_dictVertices[iVertexId]->aWeightSum[iStep] += 1 - dDistance;
+}
+
+void Graph::ClearVertexWeight(int iStep)
+{
+    for (map<int, VertexValue*>::iterator iter = m_dictVertices.begin(); iter != m_dictVertices.end(); iter++)
+    {
+        iter->second->aWeightSum[iStep] = 0;
+    }
+}
+
 map<int, set<int>* >* Graph::FindAllConnectedComponents()
 {
     set<int> setVisitedVertices;
@@ -150,7 +179,10 @@ void Graph::AddVertex(int iBegin, int iEnd)
     if (m_dictVertices.count(iBegin) == 0)
     {
         m_dictVertices[iBegin] = new VertexValue();
+        m_dictVertices[iBegin]->aWeightSum[0] = 0;
+        m_dictVertices[iBegin]->aWeightSum[1] = 0;
         m_dictVertices[iBegin]->pNeighbours = new set<int>();
+        
         m_dictVertices[iBegin]->pNeighbours->insert(iBegin);
     }
 
@@ -205,4 +237,38 @@ void Graph::ClearEdges()
             iter->second = NULL;
         }
     }
+}
+
+void EdgeValue::addNewDelta2Window(double & dDelta) {
+    if(bDeltaWindow == nullptr)
+        bDeltaWindow = new bitset<32>;
+    if(dDelta < 0){
+        bDeltaWindow->reset(iNewestDeltaIndex % EdgeValue::iWindowSize);
+    }
+    else{
+        bDeltaWindow->set(iNewestDeltaIndex % EdgeValue::iWindowSize);
+    }
+
+    int iSumSameSign = 0;
+    if(iNewestDeltaIndex >= EdgeValue::iWindowSize - 1){
+        if(bDeltaWindow -> test(iNewestDeltaIndex % EdgeValue::iWindowSize)){
+            iSumSameSign = bDeltaWindow->count();
+            if(iSumSameSign > DEFAULT_SUPPORT * EdgeValue::iWindowSize){
+                dDelta = 2;
+            }
+        }
+        else{
+            iSumSameSign = EdgeValue::iWindowSize - bDeltaWindow->count();
+            if(iSumSameSign > DEFAULT_SUPPORT * EdgeValue::iWindowSize){
+                dDelta = -2;
+            }
+        }
+
+    }
+    iNewestDeltaIndex++;
+
+}
+
+void EdgeValue::initWindowSize(int iSize) {
+    EdgeValue::iWindowSize = iSize;
 }

@@ -12,7 +12,7 @@ private:
     double m_dThreshold;
 
     map<EdgeKey, double> m_dictVirtualEdgeTempResult;
-    map<EdgeKey, double> m_dictVirtualEdgeConverge;
+
 private:
     void SetupGraph(const string &strFileName);
 
@@ -31,16 +31,16 @@ private:
     double ComputeJaccardDistance(int iBegin, int iEnd, EdgeValue* pEdgeValue);
 
     double ComputeDI(int iBegin, int iEnd, EdgeValue* pEdgeValue);
-    double ComputeCI(int iBegin, int iEnd, EdgeValue* pEdgeValue, bool& bConverge);
-    double ComputeEI(int iBegin, int iEnd, EdgeValue* pEdgeValue, bool& bConverge);
-    double ComputePartialEI(int iTarget, int iTargetNeighbour, set<int>& targetEN, bool& bConverge);
-    double ComputeInfluence(int iTargetNeighbour, int iENVertex, int iTarget, bool& bConverge);
+    double ComputeCI(int iBegin, int iEnd, EdgeValue* pEdgeValue);
+    double ComputeEI(int iBegin, int iEnd, EdgeValue* pEdgeValue);
+    double ComputePartialEI(int iTarget, int iTargetNeighbour, set<int>& targetEN);
+    double ComputeInfluence(int iTargetNeighbour, int iENVertex, int iTarget);
 
 
 
     void ComputeExclusiveNeighbour(int iBegin, int iEnd, EdgeValue* pEdgeValue);
     void ComputeCommonNeighbour(int iBegin, int iEnd, EdgeValue* pEdgeValue);
-    double ComputeVirtualDistance(int iBegin, int iEnd, int iTarget, bool& bConverge);
+    double ComputeVirtualDistance(int iBegin, int iEnd, int iTarget);
 
 public:
     CommunityDetection(bool bIsWeighted, double dThreshold);
@@ -49,7 +49,8 @@ public:
     void OutputCommunities(string& strFileName);
     void OutputEdges(string& strFileName);
     static long iVirtualEdgeNumber;
-    static long long iVirtualComputationNumber;
+    static long long iVirtualCommonComputationNumber;
+    static long long iVirtualEnNumber;
     static long iCommonEdgeNumber;
     static long long iCommonComputationNumber;
 };
