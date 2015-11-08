@@ -155,8 +155,6 @@ void CommunityDetection::DynamicInteraction()
                 cout << "EI EN Computation: " << iVirtualEnNumber << endl;
             }
         }
-        m_cGraph.ClearVertexWeight(m_iCurrentStep);
-        m_dictVirtualEdgeTempResult.clear();
 
         cout << "Iteration: " << ++i << ", The Number of Converge Edges: " << iConvergeNumber
             << ", The Number of Left Edges: " << m_cGraph.GetAllEdges()->size() - iConvergeNumber << endl;
@@ -167,6 +165,9 @@ void CommunityDetection::DynamicInteraction()
         cout << "EI Edge: " << iVirtualEdgeNumber << endl;
         cout << "EI Computation: " << iVirtualCommonComputationNumber << endl;
 
+        m_cGraph.ClearVertexWeight(m_iCurrentStep);
+        m_dictVirtualEdgeTempResult.clear();
+        m_dictInteration[i] = iConvergeNumber;
         Helper::UpdateStep(m_iCurrentStep);
     }
 
@@ -409,6 +410,26 @@ void CommunityDetection::OutputEdges(string& strFileName)
     }
 
     cout << "Output edges Complete: " << float(clock() - begin_time) / CLOCKS_PER_SEC << endl;
+
+    out.close();
+    out.clear();
+}
+
+void CommunityDetection::OutputIterationResult(string & strFileName)
+{
+    ofstream out(strFileName.c_str(), ios::out);
+
+    cout << "Output edges Start" << endl;
+
+    int iLastConvergeNumber = 0;
+
+    for (map<int, int>::iterator iter = m_dictInteration.begin(); iter != m_dictInteration.end(); iter++)
+    {
+        out << iter->first << " " << iter->second - iLastConvergeNumber << endl;
+        iLastConvergeNumber = iter->second;
+    }
+
+    cout << "Output edges Complete" << endl;
 
     out.close();
     out.clear();

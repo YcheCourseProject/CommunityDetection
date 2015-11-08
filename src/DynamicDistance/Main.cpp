@@ -23,11 +23,13 @@ int main(int argc, char* argv[])
         string strInputFileName(argv[4]);
         string strOutputCommunitiesFileName(argv[5]);
         string strOutputEdgesFileName(argv[6]);
+        string strOutputIterationResult = strOutputCommunitiesFileName + ".iter";
 
         CommunityDetection communityDetection(bIsWeighted, dThreshold);
         communityDetection.Execute(strInputFileName);
         communityDetection.OutputCommunities(strOutputCommunitiesFileName);
         communityDetection.OutputEdges(strOutputEdgesFileName);
+        communityDetection.OutputIterationResult(strOutputIterationResult);
     }
     else if (strcmp(argv[1], EVALUATION_MODE) == 0)
     {
