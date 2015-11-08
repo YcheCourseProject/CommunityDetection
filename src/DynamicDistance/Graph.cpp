@@ -86,14 +86,14 @@ double Graph::GetVertexWeightSum(int iVertexId, int iStep)
     return m_dictVertices[iVertexId]->aWeightSum[iStep];
 }
 
-void Graph::AddVertexWeight(int iVertexId, double dWeight, int iStep)
+void Graph::AddVertexWeight(int iVertexId, double dDistance, int iStep)
 {
     if (m_dictVertices.count(iVertexId) == 0)
     {
         throw new exception("Vertex is not exist.");
     }
 
-    m_dictVertices[iVertexId]->aWeightSum[iStep] += 1 - dWeight;
+    m_dictVertices[iVertexId]->aWeightSum[iStep] += 1 - dDistance;
 }
 
 void Graph::ClearVertexWeight(int iStep)

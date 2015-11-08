@@ -107,21 +107,14 @@ void CommunityDetection::DynamicInteraction()
 
             if (pEdgeValue->aDistance[m_iCurrentStep] > 0 && pEdgeValue->aDistance[m_iCurrentStep] < 1)
             {
-                bool bConverge = true;
-
                 double dDI = ComputeDI(iter->first.iBegin, iter->first.iEnd, pEdgeValue);
                 const clock_t cibegin_time = clock();
-                double dCI = ComputeCI(iter->first.iBegin, iter->first.iEnd, pEdgeValue, bConverge);
+                double dCI = ComputeCI(iter->first.iBegin, iter->first.iEnd, pEdgeValue);
                 const clock_t eiBegin_time = clock();
                 ciTime += eiBegin_time - cibegin_time;
-                double dEI = ComputeEI(iter->first.iBegin, iter->first.iEnd, pEdgeValue, bConverge);
+                double dEI = ComputeEI(iter->first.iBegin, iter->first.iEnd, pEdgeValue);
                 eiTime += clock() - eiBegin_time;
                 double delta = dDI + dCI + dEI;
-
-                if (bConverge)
-                {
-                    delta = delta > 0 ? 3 : -3;
-                }
 
                 if (delta > PRECISE || delta < -PRECISE)
                 {
@@ -164,7 +157,6 @@ void CommunityDetection::DynamicInteraction()
         }
         m_cGraph.ClearVertexWeight(m_iCurrentStep);
         m_dictVirtualEdgeTempResult.clear();
-        m_dictVirtualEdgeConverge.clear();
 
         cout << "Iteration: " << ++i << ", The Number of Converge Edges: " << iConvergeNumber
             << ", The Number of Left Edges: " << m_cGraph.GetAllEdges()->size() - iConvergeNumber << endl;
@@ -250,7 +242,7 @@ double CommunityDetection::ComputeDI(int iBegin, int iEnd, EdgeValue * pEdgeValu
             + 1 / (double)(m_cGraph.GetVertexNeighbours(iEnd)->size() - 1));
 }
 
-double CommunityDetection::ComputeCI(int iBegin, int iEnd, EdgeValue * pEdgeValue, bool& bConverge)
+double CommunityDetection::ComputeCI(int iBegin, int iEnd, EdgeValue * pEdgeValue)
 {
     double dCI = 0;
 
@@ -266,20 +258,6 @@ double CommunityDetection::ComputeCI(int iBegin, int iEnd, EdgeValue * pEdgeValu
         double dBegin = m_cGraph.Distance(iBegin, iSharedVertex, m_iCurrentStep);
         double dEnd = m_cGraph.Distance(iEnd, iSharedVertex, m_iCurrentStep);
 
-        if (bConverge)
-        {
-            if (dBegin < 1 - PRECISE && dBegin > 0 + PRECISE)
-            {
-                bConverge = false;
-            }
-
-            if (dEnd < 1 - PRECISE && dEnd > 0 + PRECISE)
-            {
-                bConverge = false;
-            }
-
-        }
-
         dCI += sin(1 - dBegin) * (1 - dEnd) / (m_cGraph.GetVertexNeighbours(iBegin)->size() - 1)
             + sin(1 - dEnd) * (1 - dBegin) / (m_cGraph.GetVertexNeighbours(iEnd)->size() - 1);
 
@@ -289,17 +267,17 @@ double CommunityDetection::ComputeCI(int iBegin, int iEnd, EdgeValue * pEdgeValu
     return -dCI;
 }
 
-double CommunityDetection::ComputeEI(int iBegin, int iEnd, EdgeValue * pEdgeValue, bool& bConverge)
+double CommunityDetection::ComputeEI(int iBegin, int iEnd, EdgeValue * pEdgeValue)
 {
     double dEI = 0;
 
-    dEI += ComputePartialEI(iBegin, iEnd, *(pEdgeValue->pExclusiveNeighbours[BEGIN_POINT]), bConverge)
-        + ComputePartialEI(iEnd, iBegin, *(pEdgeValue->pExclusiveNeighbours[END_POINT]), bConverge);
+    dEI += ComputePartialEI(iBegin, iEnd, *(pEdgeValue->pExclusiveNeighbours[BEGIN_POINT]))
+        + ComputePartialEI(iEnd, iBegin, *(pEdgeValue->pExclusiveNeighbours[END_POINT]));
 
     return -dEI;
 }
 
-double CommunityDetection::ComputePartialEI(int iTarget, int iTargetNeighbour, set<int>& targetEN, bool& bConverge)
+double CommunityDetection::ComputePartialEI(int iTarget, int iTargetNeighbour, set<int>& targetEN)
 {
     double dDistance = 0;
 
@@ -307,16 +285,16 @@ double CommunityDetection::ComputePartialEI(int iTarget, int iTargetNeighbour, s
     {
         ++iVirtualEdgeNumber;
         dDistance += sin(1 - m_cGraph.Distance(*iter, iTarget, m_iCurrentStep))
-            * ComputeInfluence(iTargetNeighbour, *iter, iTarget, bConverge)
+            * ComputeInfluence(iTargetNeighbour, *iter, iTarget)
             / (m_cGraph.GetVertexNeighbours(iTarget)->size() - 1);
     }
 
     return dDistance;
 }
 
-double CommunityDetection::ComputeInfluence(int iTargetNeighbour, int iENVertex, int iTarget, bool& bConverge)
+double CommunityDetection::ComputeInfluence(int iTargetNeighbour, int iENVertex, int iTarget)
 {
-    double dDistance = 1 - ComputeVirtualDistance(iTargetNeighbour, iENVertex, iTarget, bConverge);
+    double dDistance = 1 - ComputeVirtualDistance(iTargetNeighbour, iENVertex, iTarget);
 
     if (dDistance >= m_dThreshold)
         return dDistance;
@@ -336,7 +314,7 @@ void CommunityDetection::ComputeCommonNeighbour(int iBegin, int iEnd, EdgeValue 
         m_cGraph.GetVertexNeighbours(iEnd), pEdgeValue->pCommonNeighbours);
 }
 
-double CommunityDetection::ComputeVirtualDistance(int iBegin, int iEnd, int iTarget, bool& bConverge)
+double CommunityDetection::ComputeVirtualDistance(int iBegin, int iEnd, int iTarget)
 {
     int iTempBegin = iBegin;
     int iTempEnd = iEnd;
@@ -347,12 +325,9 @@ double CommunityDetection::ComputeVirtualDistance(int iBegin, int iEnd, int iTar
 
     if (m_dictVirtualEdgeTempResult.count(edgeKey) != 0)
     {
-        if (bConverge)
-            bConverge = m_dictVirtualEdgeConverge[edgeKey];
         return m_dictVirtualEdgeTempResult[edgeKey];
     }
 
-    bool bTempConverge = true;
     double dNumerator = 0;
     set<int>* pBeginNeighbours = m_cGraph.GetVertexNeighbours(iBegin);
     set<int>* pEndNeighbours = m_cGraph.GetVertexNeighbours(iEnd);
@@ -365,19 +340,7 @@ double CommunityDetection::ComputeVirtualDistance(int iBegin, int iEnd, int iTar
     {
         double dBegin = m_cGraph.Distance(iBegin, *iter, m_iCurrentStep);
         double dEnd = m_cGraph.Distance(iEnd, *iter, m_iCurrentStep);
-        if ((bTempConverge || bConverge) && *iter != iTarget)
-        {
-            if (dBegin < 1 - PRECISE && dBegin > 0 + PRECISE)
-            {
-                bConverge = bTempConverge = false;
-            }
 
-            if (dEnd < 1 - PRECISE && dEnd > 0 + PRECISE)
-            {
-                bConverge = bTempConverge = false;
-            }
-
-        }
         dNumerator += (1 - dBegin) + (1 - dEnd);
 
         iVirtualCommonComputationNumber++;
@@ -385,47 +348,8 @@ double CommunityDetection::ComputeVirtualDistance(int iBegin, int iEnd, int iTar
 
     double dDenominator = m_cGraph.GetVertexWeightSum(iBegin, m_iCurrentStep) + m_cGraph.GetVertexWeightSum(iEnd, m_iCurrentStep);
 
-    /*
-    for (set<int>::iterator iter = pBeginNeighbours->begin(); iter != pBeginNeighbours->end(); iter++)
-    {
-        if (*iter != iBegin)
-        {
-            double dBegin = m_cGraph.Distance(iBegin, *iter, m_iCurrentStep);
-            if ((bTempConverge || bConverge) && *iter != iTarget)
-            {
-                if (dBegin < 1 - PRECISE && dBegin > 0 + PRECISE)
-                {
-                    bConverge = bTempConverge = false;
-                }
-
-            }
-            dDenominator += (1 - dBegin);
-        }
-
-        iVirtualEnNumber++;
-    }
-
-    for (set<int>::iterator iter = pEndNeighbours->begin(); iter != pEndNeighbours->end(); iter++)
-    {
-        if (*iter != iEnd)
-        {
-            double dEnd = m_cGraph.Distance(iEnd, *iter, m_iCurrentStep);
-            if ((bTempConverge || bConverge) && *iter != iTarget)
-            {
-                if (dEnd < 1 - PRECISE && dEnd > 0 + PRECISE)
-                {
-                    bConverge = bTempConverge = false;
-                }
-
-            }
-            dDenominator += (1 - dEnd);
-        }
-        iVirtualEnNumber++;
-    }
-    */
     double dDistance = 1 - dNumerator / dDenominator;
     m_dictVirtualEdgeTempResult[edgeKey] = dDistance;
-    m_dictVirtualEdgeConverge[edgeKey] = bTempConverge;
     return dDistance;
 }
 
