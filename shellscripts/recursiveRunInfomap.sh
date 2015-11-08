@@ -42,8 +42,8 @@ function runInfomap(){
                 if [[ $truth_file_num == "1" ]];then
                     if [[ $truthfile =~ .*amazon.* ]];then
                         echo "amazon"
-                        #measurement_out_file=${init_infile//edges_input.clu/measurement_infomap.us}
-                        #attractor -E US $clu_out_file $init_infile $measurement_out_file
+                        measurement_out_file=${init_infile//edges_input.csv/measurement_infomap.us}
+                        attractor -E US $clu_out_file $init_infile $measurement_out_file
                     else
                         ground_truth_file=$1"/"$truthfile
                         measurement_out_file=${init_infile//edges_input.csv/measurement_infomap.s}
@@ -63,6 +63,5 @@ function runInfomap(){
         fi
     done
 }
-INIT_PATH="/home/cheyulin/Community-Detection/dataset/synthetic"
-runInfomap $INIT_PATH
+
 

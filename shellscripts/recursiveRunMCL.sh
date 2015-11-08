@@ -1,4 +1,4 @@
-        #!/bin/bash
+#!/bin/bash
 function runMcl(){
     for file in ` ls $1 `
     do
@@ -10,7 +10,7 @@ function runMcl(){
             if [[ $file =~ .*input.csv$ ]];then
                 #run Mcl
                 init_infile=$1"/"$file
-                temp_clu_file=${init_infile//input.csv/output_mcl.csv}
+                temp_clu_file=${init_infile//input.csv/temp_output_mcl.csv}
                 startTime=$(date +%s.%Nns)
                 if [[ $file =~ .*road.* ]];then
                     echo "run road with inflation 1.4"
@@ -34,7 +34,7 @@ function runMcl(){
                 if [[ $truth_file_num == "1" ]];then
                     if [[ $truthfile =~ .*amazon.* ]];then
                         echo "amazon"
-                        measurement_out_file=${init_infile//edges_input.clu/measurement_mcl.us}
+                        measurement_out_file=${init_infile//edges_input.csv/measurement_mcl.us}
                         attractor -E US $clu_out_file $init_infile $measurement_out_file
                     else
                         ground_truth_file=$1"/"$truthfile
@@ -55,6 +55,5 @@ function runMcl(){
     done
 }
 
-INIT_PATH="/home/cheyulin/Community-Detection/dataset/synthetic"
-runMcl $INIT_PATH
+
 

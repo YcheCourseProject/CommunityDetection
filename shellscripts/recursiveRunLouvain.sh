@@ -14,6 +14,9 @@ function runLouvain(){
                 init_infile=$1"/"$file
                 map_outfile=${init_infile//edges_input.csv/node_name_index0_map_louvain.temp}
                 edge_outfile=${init_infile//input.csv/index0_input_louvain.temp}
+                echo $init_infile
+                echo $map_outfile
+                echo $edge_outfile
                 java $java_louvain_ip_class $init_infile $map_outfile $edge_outfile
                 
                 #exec Louvain
@@ -64,6 +67,5 @@ function runLouvain(){
         fi
     done
 }
-INIT_PATH="/home/cheyulin/Community-Detection/dataset/synthetic"
-runLouvain $INIT_PATH
+
 
