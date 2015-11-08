@@ -1,0 +1,13 @@
+*/.*metadata/*
+*metadata/*
+src/.idea
+src/.idea/*
+src/Experiment/*
+src/CMakeLists.txt
+build/*
+*/.settings/
+*.project
+*.classpath
+*.class
+*.o
+

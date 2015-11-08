@@ -1,9 +1,9 @@
 #include "Helper.h"
 
-int Helper::ComputeNextStep(const int iCurrentStep)
-{
+int Helper::ComputeNextStep(const int iCurrentStep) {
     return iCurrentStep == 0 ? 1 : 0;;
 }
+
 
 void Helper::OutputEvaluationResult(const string& strFileName, map<string, double>& dictEvaluationResult)
 {
@@ -24,7 +24,6 @@ int Helper::UpdateStep(int & iCurrentStep)
     return iCurrentStep;
 }
 
-int Helper::NextStep(const int iCurrentStep)
-{
+int Helper::NextStep(const int iCurrentStep) {
     return ComputeNextStep(iCurrentStep);
 }

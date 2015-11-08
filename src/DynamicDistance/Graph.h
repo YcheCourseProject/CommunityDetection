@@ -14,7 +14,10 @@
 #include <queue>
 #include <math.h>
 #include <string>
+#include <bitset>
 #include "Helper.h"
+#include "string.h"
+
 using namespace std;
 
 #define STEP_LENGTH 2
@@ -22,16 +25,15 @@ using namespace std;
 #define BEGIN_POINT 0
 #define END_POINT 1
 #define PRECISE 0.0000001
+#define DEFAULT_WINDOWS_SIZE 10
+#define DEFAULT_SUPPORT 0.7
 
-struct EdgeKey
-{
+struct EdgeKey {
     int iBegin;
     int iEnd;
 
-    bool operator<(const EdgeKey& right) const
-    {
-        if (iBegin == right.iBegin)
-        {
+    bool operator<(const EdgeKey &right) const {
+        if (iBegin == right.iBegin) {
             return iEnd < right.iEnd;
         }
 
@@ -39,13 +41,22 @@ struct EdgeKey
     }
 };
 
-struct EdgeValue
-{
+struct EdgeValue {
+    bitset<32> * bDeltaWindow;
+    int iNewestDeltaIndex;
+    static int iWindowSize ;
+
     double dWeight;
     double aDistance[STEP_LENGTH];
-    set<int>* pCommonNeighbours;
-    set<int>* pExclusiveNeighbours[EDGE_ENDPOINT_NUMBER];
+    set<int> *pCommonNeighbours;
+    set<int> *pExclusiveNeighbours[EDGE_ENDPOINT_NUMBER];
+
+    EdgeValue():  iNewestDeltaIndex(0), bDeltaWindow(nullptr) {}
+
+    void addNewDelta2Window(double &dDelta);
+    static void initWindowSize(int iSize);
 };
+
 
 struct VertexValue
 {
@@ -53,8 +64,7 @@ struct VertexValue
     double aWeightSum[STEP_LENGTH];
 };
 
-class Graph
-{
+class Graph {
 private:
     map<EdgeKey, EdgeValue*> m_dictEdges;
     map<int, VertexValue*> m_dictVertices;
@@ -65,6 +75,7 @@ private:
     void ClearEdges();
 
 public:
+
     bool AddEdge(int iBegin, int iEnd, double dWeight, EdgeValue* &pNewEdgeValue);
     void UpdateEdge(int iBegin, int iEnd, double dNewDistance, int iStep);
     double Distance(int iBegin, int iEnd, int iStep);

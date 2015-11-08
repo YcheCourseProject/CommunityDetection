@@ -1,0 +1,23 @@
+initial:
+	xxx_edge_input.csv
+	xxx_ground_truth.csv
+middle1:
+	xxx_node_name_index0_map_louvain.temp
+	xxx_edge_index0_input_louvain.temp
+	xxx_node_name_index1_map_infomap.temp
+	xxx_edge_index1_input_infomap.temp
+	xxx_neighbors__input_metis.temp
+middle2:
+	xxx_temp__input_louvain.bin
+	xxx_temp__input_louvain.tree
+output1:
+	xxx.part[0-9]+ (metis)
+	
+
+output2:
+	xxx_metis.clu   [cluster num] [node name]
+	xxx_attractor.clu
+output3:
+	xxx_measure.s  [supervised]
+	xxx_measure.us [unsupervised]
+

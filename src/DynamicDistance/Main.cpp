@@ -3,7 +3,7 @@
 
 #define ANALYSIS_MODE "-A"
 #define EVALUATION_MODE "-E"
-#define ANALYSIS_MODE_ARGUEMENT_NUMBER 7
+#define ANALYSIS_MODE_ARGUEMENT_NUMBER 8
 #define EVALUATION_MODE_ARGUEMENT_NUMBER 6
 #define SUPERVISED "S"
 #define UNSUPERVISED "US"
@@ -14,6 +14,7 @@ int main(int argc, char* argv[])
     {
         if (argc != ANALYSIS_MODE_ARGUEMENT_NUMBER)
         {
+            cout << argc << endl;
             cout << "The number of argument is not correct." << endl;
             exit(1);
         }
@@ -23,7 +24,10 @@ int main(int argc, char* argv[])
         string strInputFileName(argv[4]);
         string strOutputCommunitiesFileName(argv[5]);
         string strOutputEdgesFileName(argv[6]);
+
         string strOutputIterationResult = strOutputCommunitiesFileName + ".iter";
+        int iWinSize = atoi(argv[7]) == 0 ? DEFAULT_WINDOWS_SIZE : atoi(argv[7]);
+        EdgeValue::initWindowSize(iWinSize);
 
         CommunityDetection communityDetection(bIsWeighted, dThreshold);
         communityDetection.Execute(strInputFileName);
@@ -75,6 +79,7 @@ int main(int argc, char* argv[])
             double dModurility = ClusteringEvaluation::Modularity(pTargetCommunities, pGraph);
             double dNcut = ClusteringEvaluation::Ncut(pTargetCommunities, pGraph);
 
+
             map<string, double> dictEvaluationResult;
             dictEvaluationResult["Mod"] = dModurility;
             dictEvaluationResult["Ncut"] = dNcut;
@@ -97,14 +102,3 @@ int main(int argc, char* argv[])
     return 0;
 }
 
-/*
-int main()
-{
-    const string fileName = "C:\\Users\\ssunah\\gitchina\\Community-Detection\\dataset\\small\\polbooks\\polbooks_edges_input.csv";
-    map<int, set<int>* >* pAdjacentList = ClusteringEvaluation::GenerateAdjecentList(fileName);
-    double dCC = ClusteringEvaluation::LocalClusteringCoefficient(pAdjacentList);
-    cout << dCC << endl;
-    ClusteringEvaluation::ClearResources(pAdjacentList);
-    return 0;
-}
-*/

@@ -4,8 +4,7 @@
 
 #include "Graph.h"
 
-class CommunityDetection
-{
+class CommunityDetection {
 private:
     Graph m_cGraph;
     bool m_bIsWeighted;
@@ -16,11 +15,14 @@ private:
     map<int, int> m_dictInteration;
 
 private:
-    void SetupGraph(const string& strFileName);
+    void SetupGraph(const string &strFileName);
+
     void InitializeGraph();
+
     void DynamicInteraction();
 
 private:
+
     void SetUnion(set<int>* left, set<int>* right, set<int>* dest);
     void SetDifference(set<int>* left, set<int>* right, set<int>* dest);
     void SetIntersection(set<int>* left, set<int>* right, set<int>* dest);
@@ -35,12 +37,15 @@ private:
     double ComputePartialEI(int iTarget, int iTargetNeighbour, set<int>& targetEN);
     double ComputeInfluence(int iTargetNeighbour, int iENVertex, int iTarget);
 
+
+
     void ComputeExclusiveNeighbour(int iBegin, int iEnd, EdgeValue* pEdgeValue);
     void ComputeCommonNeighbour(int iBegin, int iEnd, EdgeValue* pEdgeValue);
     double ComputeVirtualDistance(int iBegin, int iEnd, int iTarget);
 
 public:
     CommunityDetection(bool bIsWeighted, double dThreshold);
+
     void Execute(const string& strFileName);
     void OutputCommunities(string& strFileName);
     void OutputEdges(string& strFileName);
@@ -51,4 +56,5 @@ public:
     static long iCommonEdgeNumber;
     static long long iCommonComputationNumber;
 };
+
 #endif

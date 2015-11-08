@@ -1,0 +1,20 @@
+Dear Prof. Shao,
+
+     I am a 1st year phd student in Hong Kong University of Science and Technology.
+
+     Currently, I am pending on a project related with graph clustering. And impressed by your paper "Community Detection based Distance Dynamics" in kdd2015, I try to implement it in the project.
+     
+     However, I have some puzzles, could you please give me some comments?
+     1. I could not get the result in Figure 3(b) from Figure3(a) in your paper even manually.
+     2. For Algorithms 1 Attractor, I am confused by line 2 to line 11 related to initialization of distances.
+     For the above two questions, I have detailed explanation in the attachment.
+     
+     Besides, toward the sin function, I am not sure the unit of parameter. I wonder whether it is angle or radian. I assume it radian in my computation.
+
+     Finally, could you please provide us with the source code for our better understanding of your paper?
+     
+     Thanks for your help. Look forward to your reply.
+
+
+Che Yulin
+HKUST
