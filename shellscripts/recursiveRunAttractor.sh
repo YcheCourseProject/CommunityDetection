@@ -33,18 +33,18 @@ function runAttractor(){
                         if [[ $truthfile =~ .*amazon.* ]];then
                             echo "amazon"
                             measurement_out_file=${init_infile//edges_input.csv/measurement_attractor_old_$lamda_str.us}
-                            attractor -E US $clu_out_file $init_infile $measurement_out_file
+                            attractorReduceEI -E US $clu_out_file $init_infile $measurement_out_file
                         else
                             echo "s"
                             ground_truth_file=$1"/"$truthfile
                             measurement_out_file=${init_infile//edges_input.csv/measurement_attractor_old_$lamda_str.s}
-                            attractor -E S  $clu_out_file $ground_truth_file $measurement_out_file
+                            attractorReduceEI -E S  $clu_out_file $ground_truth_file $measurement_out_file
                         fi
                     else
                         echo "us"
                         measurement_out_file=${init_infile//edges_input.csv/measurement_attractor_old_$lamda_str.us}
                         echo $clu_out_file" "$init_infile" "$measurement_out_file
-                        attractor -E US $clu_out_file $init_infile $measurement_out_file
+                        attractorReduceEI -E US $clu_out_file $init_infile $measurement_out_file
                     fi
                     echo "startTime:"$startTime >> $measurement_out_file
                     echo "endTime:"$endTime >> $measurement_out_file
