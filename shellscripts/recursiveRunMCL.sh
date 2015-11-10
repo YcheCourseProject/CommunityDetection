@@ -15,8 +15,8 @@ function runMcl(){
                 if [[ $file =~ .*road.* ]];then
                     echo "run road with inflation 1.4"
                     mcl $init_infile --abc -I 1.4 -o $temp_clu_file   
-                else
-                    mcl $init_infile --abc -I 2 -o $temp_clu_file                     
+                else 
+                    mcl $init_infile --abc -I 2.6 -o $temp_clu_file                     
                 fi
                 endTime=$(date +%s.%Nns)
 

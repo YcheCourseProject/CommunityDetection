@@ -154,25 +154,25 @@ void CommunityDetection::DynamicInteraction() {
 
             if (++j % 100000 == 0)
             {
-                cout << "LineNumber: " << j << endl;
-                cout << "CI Time: " << ciTime << endl;
-                cout << "EI Time: " << eiTime << endl;
-                cout << "CI Computation: " << iCommonComputationNumber << endl;
-                cout << "EI Edge: " << iVirtualEdgeNumber << endl;
-                cout << "EI Common Computation: " << iVirtualCommonComputationNumber << endl;
-                cout << "EI EN Computation: " << iVirtualEnNumber << endl;
+//                cout << "LineNumber: " << j << endl;
+//                cout << "CI Time: " << ciTime << endl;
+//                cout << "EI Time: " << eiTime << endl;
+//                cout << "CI Computation: " << iCommonComputationNumber << endl;
+//                cout << "EI Edge: " << iVirtualEdgeNumber << endl;
+//                cout << "EI Common Computation: " << iVirtualCommonComputationNumber << endl;
+//                cout << "EI EN Computation: " << iVirtualEnNumber << endl;
             }
         }
 
 
-        cout << "Iteration: " << ++i << ", The Number of Converge Edges: " << iConvergeNumber
-            << ", The Number of Left Edges: " << m_cGraph.GetAllEdges()->size() - iConvergeNumber << endl;
-        cout << "LineNumber: " << j << endl;
-        cout << "CI Time: " << ciTime << endl;
-        cout << "EI Time: " << eiTime << endl;
-        cout << "CI Computation: " << iCommonComputationNumber << endl;
-        cout << "EI Edge: " << iVirtualEdgeNumber << endl;
-        cout << "EI Computation: " << iVirtualCommonComputationNumber << endl;
+//        cout << "Iteration: " << ++i << ", The Number of Converge Edges: " << iConvergeNumber
+//            << ", The Number of Left Edges: " << m_cGraph.GetAllEdges()->size() - iConvergeNumber << endl;
+//        cout << "LineNumber: " << j << endl;
+//        cout << "CI Time: " << ciTime << endl;
+//        cout << "EI Time: " << eiTime << endl;
+//        cout << "CI Computation: " << iCommonComputationNumber << endl;
+//        cout << "EI Edge: " << iVirtualEdgeNumber << endl;
+//        cout << "EI Computation: " << iVirtualCommonComputationNumber << endl;
 
         m_cGraph.ClearVertexWeight(m_iCurrentStep);
         m_dictVirtualEdgeTempResult.clear();

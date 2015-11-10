@@ -19,14 +19,14 @@ function runInfomap(){
                 
                 #run Infomap
                 startTime=$(date +%s.%Nns)
-                Infomap -i --link-list -N 10 --tree --map --clu  $edge_outfile $1
+                Infomap -i --link-list -N 1000 --tree $edge_outfile $1
                 endTime=$(date +%s.%Nns)
                 temp_clu_file=${init_infile//edges_input.csv/clu_infomap.temp}
                 temp_tree_file=${init_infile//edges_input.csv/tree_infomap.temp}
                 temp_map_file=${init_infile//edges_input.csv/map_infomap.temp}
-                mv  ${edge_outfile//.temp/.clu} $temp_clu_file
+                #mv  ${edge_outfile//.temp/.clu} $temp_clu_file
                 mv  ${edge_outfile//.temp/.tree} $temp_tree_file
-                mv  ${edge_outfile//.temp/.map} $temp_map_file
+                #mv  ${edge_outfile//.temp/.map} $temp_map_file
                 
                 #output processing
                 java_path="/home/cheyulin/Community-Detection/java_project/bin"

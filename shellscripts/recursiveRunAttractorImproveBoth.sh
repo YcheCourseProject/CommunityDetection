@@ -7,7 +7,7 @@ function runAttractorRmTailor(){
         else
             if [[ $file =~ .*input.csv$ ]];then
                 init_infile=$1"/"$file
-                declare -i lamda=6
+                declare -i lamda=5
                 while((lamda < 7))
                 do
                     #run attractor
