@@ -1,7 +1,0 @@
-ARI 1
-InvPur 1
-NMI 1
-RI 1
-SimPur 1
-startTime:1447037620.935556357ns
-endTime:1447037620.975611522ns
