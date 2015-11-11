@@ -1,16 +1,21 @@
-*/.*metadata/*
-*metadata/*
-src/.idea
-src/.idea/*
+#For JetBrains
+.*metadata/*
+*/.idea/*
+
+#For Experiment
 src/Experiment/*
-src/CMakeLists.txt
 build/*
+
+#For eclipse
 */.settings/
 *.project
 *.classpath
 *.class
+
+#For c++
 *.o
-*/*idea*/*
+
+#For Louvain
 */community
 */convert
 */hierarchy
