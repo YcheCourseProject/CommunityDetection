@@ -10,4 +10,7 @@ build/*
 *.classpath
 *.class
 *.o
-
+*/*idea*/*
+*/community
+*/convert
+*/hierarchy
