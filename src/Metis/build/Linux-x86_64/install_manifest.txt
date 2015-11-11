@@ -1,8 +1,0 @@
-/usr/local/include/metis.h
-/usr/local/lib/libmetis.a
-/usr/local/bin/gpmetis
-/usr/local/bin/ndmetis
-/usr/local/bin/mpmetis
-/usr/local/bin/m2gmetis
-/usr/local/bin/graphchk
-/usr/local/bin/cmpfillin
