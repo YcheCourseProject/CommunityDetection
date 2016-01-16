@@ -1,4 +1,7 @@
 #Community Detection Related 
+## Good Survey
+1. **[Overall Survey](http://lab41.github.io/survey-community-detection/)** (Home Page : http://lab41.github.io/Circulo/)  
+
 ## Tools
 1. **Networkx** has implemented **[many graph algorithms](http://networkx.github.io/documentation/networkx-1.10/reference/algorithms.html)**  
 
@@ -24,12 +27,22 @@
 
 9. [Par-CD](https://github.com/stijnh/Par-CD) (Multi-core CPU and GPU implementation)  
 
-10. [paco](https://github.com/CarloNicolini/paco) (Benchmark Refer to Physics Review 2009)
+10. [paco](https://github.com/CarloNicolini/paco) (Benchmark Refer to Physics Review 2009)  
+
+###C:
+1. [iGraph](https://github.com/igraph/igraph/tree/master/src) (Pop Repo, Detail Summary:http://www.r-bloggers.com/summary-of-community-detection-algorithms-in-igraph-0-6/)  
 
 ###Java:
+1. [distributed-graph-analytics](https://github.com/Sotera/distributed-graph-analytics) (BSP impl,e.g., High Betweenness Set Extraction, Weakly Connected Components, Page Rank, Leaf Compression, and Louvain Modularity)  
 
+2. [Reihaneh Rabbany](https://github.com/rabbanyk/CommunityEvaluation) (5th-year Phd Student)  
 
-###Others:
+3. [noesis](https://github.com/sisusisu/noesis)(Some Impls)  
+
+###Python:
+1. [Label-Propagation](https://github.com/liyanghua/Label-Propagation) (Refer to Pyshics 2007)  
+
+2. [Circulo](https://github.com/Lab41/Circulo) (With Some Implementations and Refer to SNAP)  
 
 ## Interesting Published Papers(With Codes)
 1. [GossipMap: a distributed community detection algorithm for billion-edge directed graphs](http://dl.acm.org/citation.cfm?id=2807668) (SC15)  
