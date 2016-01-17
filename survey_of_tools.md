@@ -1,14 +1,25 @@
 #Community Detection Related 
+##Research Points
+1. Evaluation of Prior Detection Methods  
+
+2. Sampling Large Scale Graph, Using Sample for Approximation Structure  
+
 ## Good Survey
 1. **[Overall Survey](http://lab41.github.io/survey-community-detection/)** (Home Page : http://lab41.github.io/Circulo/)  
 
 ## Tools
 1. **Networkx** has implemented **[many graph algorithms](http://networkx.github.io/documentation/networkx-1.10/reference/algorithms.html)**  
 
+2. **[Snap](https://github.com/snap-stanford/snap)** (Infomap, Fast Newman, BIGCLAM, CESNA, CoDA, RoIX)  
+
+3. **[igraph](https://github.com/igraph/igraph)** (Infomap, WalkTrap, Leading Eginvector)  
+
 2. **[Egien](http://eigen.tuxfamily.org/index.php?title=Main_Page)** (Cpp template library for linear algebra related algorithms)  
 
 ## Codes
 ###C++:
+1. [Benchmark2009](https://sites.google.com/site/santofortunato/inthepress2) (Prior 2008 Algorithms Comparison)
+
 1. [AI-community-detection](https://github.com/sina-khorami/AI-community-detection) (Combo, Martelot's algorithms)  
 
 2. [network-community-benchmark](https://github.com/conradlee/network-community-benchmark) (Benchmark with facebok)  
@@ -29,6 +40,8 @@
 
 10. [paco](https://github.com/CarloNicolini/paco) (Benchmark Refer to Physics Review 2009)  
 
+11. [SCD](https://github.com/DAMA-UPC/SCD) (Scalable Community Detection)  
+
 ###C:
 1. [iGraph](https://github.com/igraph/igraph/tree/master/src) (Pop Repo, Detail Summary:http://www.r-bloggers.com/summary-of-community-detection-algorithms-in-igraph-0-6/)  
 
@@ -46,6 +59,8 @@
 
 ## Interesting Published Papers(With Codes)
 1. [GossipMap: a distributed community detection algorithm for billion-edge directed graphs](http://dl.acm.org/citation.cfm?id=2807668) (SC15)  
+
+2. [High quality, scalable and parallel community detection for large real graphs](http://www.dama.upc.edu/publications/fp546prat.pdf) (WWW 2014)
 
 2. [Community detection: effective evaluation on large social networks](http://comnet.oxfordjournals.org/content/2/1/19.full.pdf+html) (Journal of Complex Networks 2014)  
 
