@@ -1,6 +1,8 @@
 # Community Detection
 
-This is a probject of Community Detection.
+This is a probject of Community Detection. 
+
+KDD Course Project - Implementation of Community Detection Algorithms and Evaluations and Some Datasets (港科博一时候KDD课程作业) - by [Shixuan Sun](https://github.com/shixuansun) and [Yulin CHE](https://github.com/CheYulin)
   
 ## Dataset
 
